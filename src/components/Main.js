@@ -172,26 +172,26 @@ const Main = ({ account }) => {
   })
 
   useEffect(() => {
-    if (!account) {
-      // If no data or no data.user, it means this is the first time user visit the wallet so we create account for them automatically
-      const createUser = async () => {
-        try {
-          const user = await createAccount()
-          setUser({ ...user.data.createAccount })
-        } catch (error) {
-          setCreateAcError(true)
-        }
-      }
-      createUser().then(() => {
-        mintCoin()
-      })
-    }
+    // if (!account) {
+    //   // If no data or no data.user, it means this is the first time user visit the wallet so we create account for them automatically
+    //   const createUser = async () => {
+    //     try {
+    //       const user = await createAccount()
+    //       setUser({ ...user.data.createAccount })
+    //     } catch (error) {
+    //       setCreateAcError(true)
+    //     }
+    //   }
+    //   createUser().then(() => {
+    //     mintCoin()
+    //   })
+    // }
 
-    // localStorage.removeItem('User')
-    // localStorage.removeItem('Events')
-    // localStorage.removeItem('Messages')
-    // client.writeData({ data: { user: null } })
-    // client.writeData({ data: { events: null } })
+    localStorage.removeItem('User')
+    localStorage.removeItem('Events')
+    localStorage.removeItem('Messages')
+    client.writeData({ data: { user: null } })
+    client.writeData({ data: { events: null } })
   }, [account, createAccount, mintCoin])
 
   useEffect(() => {
