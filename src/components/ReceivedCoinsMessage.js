@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import { useEffect, useContext } from 'react'
 import { useSubscription } from '@apollo/react-hooks'
 
 import { RECEIVED_COINS_NOTIFIER } from '../apolloClient/subscription'
@@ -12,7 +12,7 @@ import {
 
 const ReceivedCoinsMessage = ({ address }) => {
   const { getEvents } = useContext(EventsContext)
-  const { getState } = useContext(QueryContext)
+  const { setState } = useContext(QueryContext)
 
   const { data } = useSubscription(RECEIVED_COINS_NOTIFIER, {
     variables: { receiverAddress: address }
@@ -32,14 +32,14 @@ const ReceivedCoinsMessage = ({ address }) => {
         }
       } = data.receivedCoins
 
-      const user = getLocalAccount()
+      const userState = getLocalAccount()
 
-      // Update user
-      if (user) {
-        user.balance = +user.balance + +amount
+      // Update state
+      if (userState) {
+        userState.balance = +userState.balance + +amount
       }
-      saveLocalAccount(user)
-      getState()
+      saveLocalAccount(userState)
+      setState(userState)
 
       // Update event
       const newEvent = {
@@ -51,6 +51,7 @@ const ReceivedCoinsMessage = ({ address }) => {
         toAccount: to_account,
         transaction_version: version
       }
+
       // const oldEvents = JSON.parse(localStorage.getItem('Events'))
       const oldEvents = getLocalEvents() || []
       const newEvents = [newEvent, ...oldEvents]
@@ -58,49 +59,6 @@ const ReceivedCoinsMessage = ({ address }) => {
       getEvents()
     }
   }, [data])
-
-  // useEffect(() => {
-  //   console.log('Effect run -->')
-  //   if (data && data.receivedCoins) {
-  //     const {
-  //       version,
-  //       signed_transaction: {
-  //         signed_txn: { amount, from_account, to_account, expiration_time }
-  //       }
-  //     } = data.receivedCoins
-  //     console.log(data.receivedCoins)
-
-  //     // Get events and messages from localStorage, if null, initialize with []
-  //     const oldEventsList = JSON.parse(localStorage.getItem('Events')) || []
-  //     const oldMessagesList = JSON.parse(localStorage.getItem('Messages')) || []
-  //     console.log('Events-->', oldEventsList)
-  //     console.log('Messages', oldMessagesList)
-
-  //     const newEvent = {
-  //       transaction_version: version,
-  //       sequenceNumber: 'n/a',
-  //       amount,
-  //       toAccount: to_account,
-  //       fromAccount: from_account,
-  //       date: expiration_time,
-  //       event_type: 'received'
-  //     }
-  //     const newEventsList = [newEvent, ...oldEventsList]
-  //     localStorage.removeItem('Events')
-  //     localStorage.setItem('Events', JSON.stringify(newEventsList))
-
-  //     const newMessage = {
-  //       from: from_account,
-  //       amount,
-  //       date: expiration_time
-  //     }
-  //     const newMessagesList = [newMessage, ...oldMessagesList]
-  //     localStorage.removeItem('Messages')
-  //     localStorage.setItem('Messages', JSON.stringify(newMessagesList))
-
-  //     getEvents()
-  //   }
-  // }, data)
 
   return null
 }

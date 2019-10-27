@@ -10,7 +10,7 @@ import MainPage from './pages/MainPage'
 import ContextProvider from './hooks/state'
 import './fontawesome/fontawesome'
 
-const account = JSON.parse(localStorage.getItem('User'))
+// const accountState = JSON.parse(localStorage.getItem('User'))
 
 const App = () => {
   return (
@@ -19,7 +19,8 @@ const App = () => {
         <StylesProvider injectFirst>
           <MuiThemeProvider theme={muiTheme}>
             <Page>
-              <MainPage account={account} />
+              {/* <MainPage accountState={accountState} /> */}
+              <MainPage />
             </Page>
           </MuiThemeProvider>
         </StylesProvider>

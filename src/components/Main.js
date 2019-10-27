@@ -1,21 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
+import React, { useContext, useEffect } from 'react'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import styled from 'styled-components'
-import QRCode from 'qrcode.react'
 
 import { ActivityContext, QueryContext } from '../hooks'
-import { CREATE_ACCOUNT, MINT_COINS } from '../apolloClient/mutation'
-import { QUERY_BY_ADDRESS, QUERY_RECEIVED_EVENTS } from '../apolloClient/query'
-import Account from './Account'
+import { CREATE_ACCOUNT } from '../apolloClient/mutation'
+import { QUERY_BY_ADDRESS } from '../apolloClient/query'
 import Head from './Head'
 import Loader from './Loader'
 import EventsList from './EventsList'
 import ReceivedCoinsMessage from './ReceivedCoinsMessage'
-import {
-  saveLocalAccount,
-  getLocalEvents,
-  saveLocalEvents
-} from '../helpers/getLocalStorageData'
+import { saveLocalAccount } from '../helpers/getLocalStorageData'
+import Account from './Account'
 
 const MainDiv = styled.div`
   width: 50%;
@@ -44,14 +39,15 @@ const MainDiv = styled.div`
     margin-top: 0;
   }
 
-  .qr-code {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 2rem auto;
+  .account {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    /* margin-bottom: 2rem; */
 
     @media ${props => props.theme.sm} {
-      width: 60%;
+      margin-bottom: 3rem;
+      width: 80%;
     }
   }
 
@@ -101,196 +97,96 @@ const MainDiv = styled.div`
   }
 `
 
-const Main = ({ account }) => {
+// const Account = React.lazy(() => import('./Account'))
+
+const Main = () => {
   const { startSendCoins, showEvents, toggleShowEvents } = useContext(
     ActivityContext
   )
-  const { getState } = useContext(QueryContext)
-  const [user, setUser] = useState(null)
-  const [createAcError, setCreateAcError] = useState(false)
-  const [newTxnVersion, setNewTxnVersion] = useState(null)
+  const { accountState, setState } = useContext(QueryContext)
 
-  const client = useApolloClient()
   const { data } = useQuery(QUERY_BY_ADDRESS, {
     variables: {
-      address: (account && account.address) || (user && user.address)
+      address: accountState ? accountState.address : ''
     }
   })
 
-  const receivedEvents = useQuery(QUERY_RECEIVED_EVENTS, {
-    variables: {
-      address: (account && account.address) || ((user && user.address) || '')
-    }
-  })
-
-  const [createAccount] = useMutation(CREATE_ACCOUNT)
-  const [mintCoin, { loading, error }] = useMutation(MINT_COINS, {
-    variables: {
-      amount: 1000,
-      address: account ? account.address : user ? user.address : ''
-    },
-    onCompleted({ mintCoin }) {
-      const {
-        blob: {
-          blob: { balance, sequence_number }
-        }
-      } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof
-
-      const {
-        version
-      } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof
-      setNewTxnVersion(version)
-      const updatedUser = {
-        ...user,
-        balance,
-        sequenceNumber: sequence_number
-      }
-
-      saveLocalAccount(updatedUser)
-      getState()
-
-      client.writeData({
-        data: {
-          user: updatedUser
-        }
-      })
-    },
-    refetchQueries: [
-      {
-        query: QUERY_BY_ADDRESS,
-        variables: {
-          address: (account && account.address) || (user && user.address)
-        }
-      },
-      {
-        query: QUERY_RECEIVED_EVENTS,
-        variables: {
-          address: (account && account.address) || (user && user.address)
-        }
-      }
-    ]
-  })
+  const [createAccount, { loading, error }] = useMutation(CREATE_ACCOUNT)
 
   useEffect(() => {
-    if (!account) {
-      // If no data or no data.user, it means this is the first time user visit the wallet so we create account for them automatically
+    const account = JSON.parse(localStorage.getItem('User'))
+    // Update context
+    setState(account)
+
+    // First case: already have account in localStorage whether it is already in testnet system or not
+    if (account) {
+      // If the account is already in the testnet system, so we will find its state and update the locatStorage data due to the lastest state from testnet
+      if (
+        data &&
+        data.queryByAddress &&
+        data.queryByAddress.response_items &&
+        data.queryByAddress.response_items[0] &&
+        data.queryByAddress.response_items[0].get_account_state_response
+      ) {
+        const {
+          account_state_with_proof: {
+            blob: {
+              blob: { balance, sequence_number }
+            }
+          }
+        } = data.queryByAddress.response_items[0].get_account_state_response
+        const updatedUser = {
+          ...account,
+          balance: balance || 0,
+          sequenceNumber: sequence_number
+        }
+
+        // Update context
+        setState(updatedUser)
+
+        // Update localStorage
+        saveLocalAccount(updatedUser)
+      }
+    }
+    // Second case: no account in local storage yet, so we need to create one.
+    else {
       const createUser = async () => {
         try {
           const user = await createAccount()
-          setUser({ ...user.data.createAccount })
-        } catch (error) {
-          setCreateAcError(true)
-        }
-      }
-      createUser().then(() => {
-        mintCoin()
-      })
-    }
 
-    // localStorage.removeItem('User')
-    // localStorage.removeItem('Events')
-    // localStorage.removeItem('Messages')
-    // client.writeData({ data: { user: null } })
-    // client.writeData({ data: { events: null } })
-  }, [account, createAccount, mintCoin])
+          if (user) {
+            const {
+              data: { createAccount }
+            } = user
+            const updatedUser = { ...createAccount }
 
-  useEffect(() => {
-    // Mint coins once user has coins less than 50
-    if (account && data && data.user && data.user.balance < 50) {
-      mintCoin()
-    }
-  }, [data, account, mintCoin])
+            // Update context
+            setState(updatedUser)
 
-  useEffect(() => {
-    if (
-      newTxnVersion &&
-      receivedEvents &&
-      receivedEvents.data &&
-      receivedEvents.data.queryReceivedEvents &&
-      receivedEvents.data.queryReceivedEvents.length > 0
-    ) {
-      const newEvent = receivedEvents.data.queryReceivedEvents.find(
-        event => event.transaction_version === newTxnVersion
-      )
-
-      if (newEvent) {
-        const {
-          transaction_version,
-          event: {
-            sequence_number,
-            event_data: { address, amount }
+            // Update localStorage
+            saveLocalAccount(updatedUser)
           }
-        } = newEvent
-
-        const storedEvent = {
-          transaction_version,
-          sequenceNumber: sequence_number,
-          fromAccount: address,
-          toAccount: (account && account.address) || (user && user.address),
-          amount,
-          date: Date.now().toString(),
-          event_type: 'mint'
+        } catch (err) {
+          console.log(err)
         }
-
-        // Get events from localStorage, if null, initialize with []
-        const oldEventsList = getLocalEvents() || []
-
-        const newEventsList = [storedEvent, ...oldEventsList]
-
-        saveLocalEvents(newEventsList)
       }
-    }
-  }, [newTxnVersion, receivedEvents, account, user])
+      createUser()
 
-  // Pass user object to Account component depending on what source of data the user is from (if user was already in localStorage, we pass data.user, if not we pass user from useState)
+      // Clear events in local storage if any
+      localStorage.removeItem('Events')
+    }
+  }, [data])
+
   return (
     <MainDiv>
       <Head />
-      {((!account && !user) || loading) && <Loader />}
+      <div className='account'>
+        {(!accountState || loading) && <Loader />}
 
-      {createAcError ||
-        (error && (
-          <p>Ooobs..., something went wrong. Please refresh the page.</p>
-        ))}
+        {error && <p>Ooobs, something went wrong in creating account.</p>}
 
-      {(account || user) && !loading && <Account />}
-
-      {/* {data &&
-        data.queryByAddress &&
-        data.queryByAddress.response_items[0] &&
-        data.queryByAddress.response_items[0].get_account_state_response && (
-          <Account
-            user={account ? account : user ? user : null}
-            balance={
-              data &&
-              data.queryByAddress &&
-              data.queryByAddress.response_items[0] &&
-              data.queryByAddress.response_items[0]
-                .get_account_state_response &&
-              data.queryByAddress.response_items[0].get_account_state_response
-                .account_state_with_proof &&
-              data.queryByAddress.response_items[0].get_account_state_response
-                .account_state_with_proof.blob.blob.balance
-            }
-          />
-        )} */}
-
-      {/* {data && data.user && data.user.balance && (
-        <Account
-          user={account ? account : user ? user : null}
-          balance={data && data.user && data.user.balance}
-        />
-      )} */}
-
-      <div className='qr-code'>
-        {((account && account.address) || (user && user.address)) && (
-          <QRCode
-            value={account ? account.address : user ? user.address : null}
-            size={150}
-          />
-        )}
+        {accountState && !error && <Account />}
       </div>
-
       <div className='action-button' onClick={startSendCoins}>
         <div className='button-text'>Send Coins</div>
       </div>
@@ -298,12 +194,11 @@ const Main = ({ account }) => {
       <div className='action-button' onClick={toggleShowEvents}>
         <div className='button-text'>Activities</div>
       </div>
+
       {showEvents && <EventsList />}
 
       <div>
-        <ReceivedCoinsMessage
-          address={(account && account.address) || (user && user.address)}
-        />
+        <ReceivedCoinsMessage address={accountState && accountState.address} />
       </div>
     </MainDiv>
   )

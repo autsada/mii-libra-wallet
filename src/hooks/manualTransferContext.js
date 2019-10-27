@@ -105,5 +105,3 @@ export const ManualTransferProvider = ({ children }) => {
     </ManualTransferContext.Provider>
   )
 }
-
-// export default ManualTransferProvider

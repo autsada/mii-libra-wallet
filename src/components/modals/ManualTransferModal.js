@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import styled from 'styled-components'
 import { TextField, Button } from '@material-ui/core'
@@ -123,7 +123,11 @@ const Div = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    margin-top: 16rem;
+    margin-top: 8rem;
+
+    @media ${props => props.theme.sm} {
+      margin-top: 16rem;
+    }
 
     .transfer-message {
       display: flex;
@@ -229,8 +233,8 @@ const Div = styled.div`
 const ManualTransfer = () => {
   const classes = useStyles()
   const { cancelManual, scanQR } = useContext(ActivityContext)
-  const { accountState, getState } = useContext(QueryContext)
-  const { qrValue } = useContext(QrCodeContext)
+  const { accountState, setState } = useContext(QueryContext)
+  const { qrValue, clearQrValue } = useContext(QrCodeContext)
   const { getEvents } = useContext(EventsContext)
   const {
     transferArgs: { receiver, amount },
@@ -243,16 +247,12 @@ const ManualTransfer = () => {
 
   const client = useApolloClient()
 
-  useEffect(() => {
-    getState()
-  }, [accountState, getState])
-
   const [transferMoney, { loading, error }] = useMutation(TRANSFER_COINS, {
     variables: {
       fromAddress: accountState && accountState.address,
       sequenceNumber: accountState && accountState.sequenceNumber,
       toAddress: receiver || qrValue,
-      amount: amount,
+      amount,
       secretKey: accountState && accountState.secretKey
     },
     onCompleted({ transferMoney }) {
@@ -270,9 +270,10 @@ const ManualTransfer = () => {
       } = transferMoney
 
       clearTransferInputs()
+      clearQrValue()
       cancelManual()
 
-      const updatedUser = accountState && {
+      const updatedState = accountState && {
         ...accountState,
         balance: accountState.balance - amount,
         sequenceNumber: sequence_number + 1
@@ -288,12 +289,12 @@ const ManualTransfer = () => {
         transaction_version: version
       }
 
-      saveLocalAccount(updatedUser)
-      getState()
+      saveLocalAccount(updatedState)
+      setState(updatedState)
 
       client.writeData({
         data: {
-          user: updatedUser
+          user: updatedState
         }
       })
 
@@ -469,9 +470,3 @@ const ManualTransfer = () => {
 }
 
 export default ManualTransfer
-
-// ||
-// !!errors.email ||
-// ((errors.password && errors.password.length > 0) ||
-//   !values.confirmPassword ||
-//   errors.confirmPassword)

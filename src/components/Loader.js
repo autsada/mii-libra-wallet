@@ -5,7 +5,7 @@ const Div = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
+  margin: 2rem auto;
 
   .lds-ripple {
     display: inline-block;

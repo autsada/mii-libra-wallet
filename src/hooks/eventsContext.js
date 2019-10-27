@@ -5,7 +5,7 @@ import { getLocalEvents } from '../helpers/getLocalStorageData'
 export const EventsContext = createContext()
 
 export const EventsProvider = ({ children }) => {
-  const [events, setEvents] = useState(null)
+  const [eventsList, setEvents] = useState(getLocalEvents() || [])
 
   const getEvents = () => {
     const evts = getLocalEvents()
@@ -14,7 +14,7 @@ export const EventsProvider = ({ children }) => {
   }
 
   return (
-    <EventsContext.Provider value={{ events, getEvents }}>
+    <EventsContext.Provider value={{ eventsList, getEvents }}>
       {children}
     </EventsContext.Provider>
   )

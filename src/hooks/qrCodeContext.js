@@ -16,11 +16,13 @@ export const QrCodeProvider = ({ children }) => {
     }
   }
 
+  const clearQrValue = () => setQrValue('')
+
   const handleError = error => setQrError(error)
 
   return (
     <QrCodeContext.Provider
-      value={{ qrValue, handleScan, qrError, handleError }}
+      value={{ qrValue, handleScan, qrError, clearQrValue, handleError }}
     >
       {children}
     </QrCodeContext.Provider>

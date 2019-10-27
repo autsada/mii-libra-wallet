@@ -4,13 +4,13 @@ export const QueryContext = createContext()
 
 export const QueryProvider = ({ children }) => {
   const [accountState, setAccountState] = useState(null)
-  const getState = () => {
-    const user = JSON.parse(localStorage.getItem('User'))
-    setAccountState(user)
+
+  const setState = state => {
+    setAccountState(state)
   }
 
   return (
-    <QueryContext.Provider value={{ accountState, getState }}>
+    <QueryContext.Provider value={{ accountState, setState }}>
       {children}
     </QueryContext.Provider>
   )

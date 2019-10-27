@@ -4,12 +4,13 @@ import { ActivityContext } from '../hooks/activityContext'
 import Main from '../components/Main'
 import Modal from './../components/modals/Modal'
 
-const MainPage = ({ account, events }) => {
+const MainPage = () => {
   const { openModal } = useContext(ActivityContext)
   return (
     <>
       {openModal && <Modal />}
-      <Main account={account} events={events} />
+      {/* <Main accountState={accountState} /> */}
+      <Main />
     </>
   )
 }
