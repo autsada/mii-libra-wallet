@@ -14,7 +14,7 @@ import Account from './Account'
 
 const MainDiv = styled.div`
   width: 50%;
-  height: auto;
+  height: 100%;
   background: ${props => props.theme.white};
   margin: 0 auto;
   color: ${props => props.theme.black};
