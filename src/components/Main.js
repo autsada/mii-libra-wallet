@@ -105,7 +105,6 @@ const Main = () => {
     ActivityContext
   )
   const { accountState, setState } = useContext(QueryContext)
-  const [queryError, setQueryError] = useState(null)
   const [checkState, setCheckState] = useState(false)
 
   const client = useApolloClient()
@@ -149,22 +148,38 @@ const Main = () => {
     if (accountState && accountState.address) {
       const getLatestState = () => {
         return new Promise((resolve, reject) => {
-          if (queryAccount && queryAccount.data) {
-            const { data } = queryAccount
-            if (
-              data &&
-              data.queryByAddress &&
-              data.queryByAddress.response_items &&
-              data.queryByAddress.response_items[0] &&
-              data.queryByAddress.response_items[0].get_account_state_response
-            ) {
-              resolve(
+          let callCount = 0
+
+          const query = setInterval(() => {
+            callCount++
+
+            if (queryAccount && queryAccount.data) {
+              const { data } = queryAccount
+              if (
+                data &&
+                data.queryByAddress &&
+                data.queryByAddress.response_items &&
+                data.queryByAddress.response_items[0] &&
                 data.queryByAddress.response_items[0].get_account_state_response
-              )
-            } else if (queryAccount && queryAccount.error) {
-              reject(queryAccount.error)
+              ) {
+                resolve(
+                  data.queryByAddress.response_items[0]
+                    .get_account_state_response
+                )
+                clearInterval(query)
+              }
+
+              if (queryAccount && queryAccount.error) {
+                clearInterval(query)
+                reject(queryAccount.error)
+              }
+
+              if (callCount > 10 && queryAccount && !queryAccount.data) {
+                clearInterval(query)
+                reject('Account does not exists')
+              }
             }
-          }
+          }, 200)
         })
       }
 
@@ -225,8 +240,27 @@ const Main = () => {
             })
           }
         } catch (error) {
-          // Error in querry
-          setQueryError(error)
+          // Account does not exist in the testnet system
+          const resetAccount = {
+            ...accountState,
+            balance: 0,
+            sequenceNumber: undefined
+          }
+          // Update context
+          setState(resetAccount)
+
+          // Confirm that the state is check
+          setCheckState(true)
+
+          // Update localStorage
+          saveLocalAccount(resetAccount)
+
+          // Update cache
+          client.writeData({
+            data: {
+              user: resetAccount
+            }
+          })
         }
       }
       getState()
@@ -253,9 +287,7 @@ const Main = () => {
       <div className='account'>
         {!accountState || (!accountState.address && loading && <Loader />)}
 
-        {(error || queryError) && (
-          <p>Ooobs, something went wrong in creating account.</p>
-        )}
+        {error && <p>Ooobs, something went wrong in creating account.</p>}
 
         <Account checkState={checkState} />
       </div>
