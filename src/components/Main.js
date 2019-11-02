@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import React, { useContext, useEffect, useState } from 'react'
+import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
 import styled from 'styled-components'
 
 import { ActivityContext, QueryContext } from '../hooks'
@@ -36,7 +36,8 @@ const MainDiv = styled.div`
 
   @media ${props => props.theme.sm} {
     width: 100%;
-    margin-top: 0;
+    height: 100vh;
+    margin: 0;
   }
 
   .account {
@@ -104,68 +105,137 @@ const Main = () => {
     ActivityContext
   )
   const { accountState, setState } = useContext(QueryContext)
+  const [queryError, setQueryError] = useState(null)
+  const [checkState, setCheckState] = useState(false)
 
-  const { data } = useQuery(QUERY_BY_ADDRESS, {
+  const client = useApolloClient()
+
+  const queryAccount = useQuery(QUERY_BY_ADDRESS, {
     variables: {
-      address: accountState ? accountState.address : ''
+      address: (accountState && accountState.address) || ''
     }
   })
 
-  const [createAccount, { loading, error }] = useMutation(CREATE_ACCOUNT)
-
-  useEffect(() => {
-    const account = JSON.parse(localStorage.getItem('User'))
-    // Update context
-    setState(account)
-
-    // First case: already have account in localStorage whether it is already in testnet system or not
-    if (account) {
-      // If the account is already in the testnet system, so we will find its state and update the locatStorage data due to the lastest state from testnet
-      if (
-        data &&
-        data.queryByAddress &&
-        data.queryByAddress.response_items &&
-        data.queryByAddress.response_items[0] &&
-        data.queryByAddress.response_items[0].get_account_state_response
-      ) {
-        const {
-          account_state_with_proof: {
-            blob: {
-              blob: { balance, sequence_number }
-            }
-          }
-        } = data.queryByAddress.response_items[0].get_account_state_response
-        const updatedUser = {
-          ...account,
-          balance: balance || 0,
-          sequenceNumber: sequence_number
+  const [createAccount, { loading, error }] = useMutation(CREATE_ACCOUNT, {
+    onCompleted({ createAccount }) {
+      if (createAccount) {
+        const newAccount = {
+          ...createAccount,
+          balance: 0,
+          sequenceNumber: undefined
         }
 
         // Update context
-        setState(updatedUser)
+        setState(newAccount)
+
+        // Confirm that the state is check
+        setCheckState(true)
 
         // Update localStorage
-        saveLocalAccount(updatedUser)
+        saveLocalAccount(newAccount)
+
+        // Update cache
+        client.writeData({
+          data: {
+            user: newAccount
+          }
+        })
       }
+    }
+  })
+
+  useEffect(() => {
+    // First case: already have account in localStorage whether it is already in testnet system or not
+    if (accountState && accountState.address) {
+      const getLatestState = () => {
+        return new Promise((resolve, reject) => {
+          if (queryAccount && queryAccount.data) {
+            const { data } = queryAccount
+            if (
+              data &&
+              data.queryByAddress &&
+              data.queryByAddress.response_items &&
+              data.queryByAddress.response_items[0] &&
+              data.queryByAddress.response_items[0].get_account_state_response
+            ) {
+              resolve(
+                data.queryByAddress.response_items[0].get_account_state_response
+              )
+            } else if (queryAccount && queryAccount.error) {
+              reject(queryAccount.error)
+            }
+          }
+        })
+      }
+
+      const getState = async () => {
+        try {
+          const state = await getLatestState()
+
+          if (state) {
+            // Found state in testnet system
+            const {
+              blob: {
+                blob: { balance, sequence_number }
+              }
+            } = state.account_state_with_proof
+
+            const updatedUser = {
+              ...accountState,
+              balance: balance || 0,
+              sequenceNumber: sequence_number
+            }
+
+            // Update context
+            setState(updatedUser)
+
+            // Confirm that the state is check
+            setCheckState(true)
+
+            // Update localStorage
+            saveLocalAccount(updatedUser)
+
+            // Update cache
+            client.writeData({
+              data: {
+                user: updatedUser
+              }
+            })
+          } else {
+            // Account does not exist in the testnet system
+            const resetAccount = {
+              ...accountState,
+              balance: 0,
+              sequenceNumber: undefined
+            }
+            // Update context
+            setState(resetAccount)
+
+            // Confirm that the state is check
+            setCheckState(true)
+
+            // Update localStorage
+            saveLocalAccount(resetAccount)
+
+            // Update cache
+            client.writeData({
+              data: {
+                user: resetAccount
+              }
+            })
+          }
+        } catch (error) {
+          // Error in querry
+          setQueryError(error)
+        }
+      }
+      getState()
     }
     // Second case: no account in local storage yet, so we need to create one.
     else {
       const createUser = async () => {
         try {
-          const user = await createAccount()
-
-          if (user) {
-            const {
-              data: { createAccount }
-            } = user
-            const updatedUser = { ...createAccount }
-
-            // Update context
-            setState(updatedUser)
-
-            // Update localStorage
-            saveLocalAccount(updatedUser)
-          }
+          await createAccount()
         } catch (err) {
           console.log(err)
         }
@@ -175,17 +245,19 @@ const Main = () => {
       // Clear events in local storage if any
       localStorage.removeItem('Events')
     }
-  }, [data])
+  }, [queryAccount && queryAccount.data, client])
 
   return (
     <MainDiv>
       <Head />
       <div className='account'>
-        {(!accountState || loading) && <Loader />}
+        {!accountState || (!accountState.address && loading && <Loader />)}
 
-        {error && <p>Ooobs, something went wrong in creating account.</p>}
+        {(error || queryError) && (
+          <p>Ooobs, something went wrong in creating account.</p>
+        )}
 
-        {accountState && !error && <Account />}
+        <Account checkState={checkState} />
       </div>
       <div className='action-button' onClick={startSendCoins}>
         <div className='button-text'>Send Coins</div>
@@ -197,16 +269,9 @@ const Main = () => {
 
       {showEvents && <EventsList />}
 
-      <div>
-        <ReceivedCoinsMessage address={accountState && accountState.address} />
-      </div>
+      {accountState && <ReceivedCoinsMessage />}
     </MainDiv>
   )
 }
 
 export default Main
-// 75df80184b14dc905a75c256eab041c9f8b1bb906a7756f6338f40f068007b36
-// 09c60fea0b7a7205ebf9fd0e62c2949af07553e01856b73fc21c12041163eff7
-// 1b764673cc4f62078f0ade9007b6855a15fb588d94342ea313f9995c94c49b38
-// 64ae60f1d14446326cc91b040d990d308f3c8e16645cad73d37ab9420744ccaa
-// fb0331d233fd1b2754aeba880d295690f3f100eb28c6a1a096e2355b75a118b5

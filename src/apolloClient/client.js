@@ -48,8 +48,8 @@ const client = new ApolloClient({
 // Initialize local state
 client.writeData({
   data: {
-    user: JSON.parse(localStorage.getItem('User')),
-    events: JSON.parse(localStorage.getItem('Events'))
+    user: JSON.parse(localStorage.getItem('User')) || {},
+    events: JSON.parse(localStorage.getItem('Events')) || []
   }
 })
 

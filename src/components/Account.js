@@ -5,12 +5,12 @@ import QRCode from 'qrcode.react'
 
 import { QueryContext } from '../hooks'
 import { MINT_COINS } from '../apolloClient/mutation'
-import { QUERY_RECEIVED_EVENTS } from '../apolloClient/query'
+import { QUERY_RECEIVED_EVENTS, GET_EVENTS } from '../apolloClient/query'
 import {
   saveLocalAccount,
-  getLocalEvents,
   saveLocalEvents
 } from '../helpers/getLocalStorageData'
+import Loader from './Loader'
 
 const AccountDiv = styled.div`
   .address {
@@ -43,15 +43,19 @@ const AccountDiv = styled.div`
   }
 `
 
-const Account = () => {
+const Account = ({ checkState }) => {
   const { accountState, setState } = useContext(QueryContext)
   const [newTxnVersion, setNewTxnVersion] = useState(null)
 
   const client = useApolloClient()
 
+  const {
+    data: { events }
+  } = useQuery(GET_EVENTS)
+
   const receivedEvents = useQuery(QUERY_RECEIVED_EVENTS, {
     variables: {
-      address: accountState && accountState.address
+      address: (accountState && accountState.address) || ''
     }
   })
 
@@ -62,28 +66,22 @@ const Account = () => {
     },
     onCompleted({ mintCoin }) {
       const {
+        version,
         blob: {
           blob: { balance, sequence_number }
         }
       } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof
 
-      const {
-        version
-      } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof
       setNewTxnVersion(version)
-
       const updatedState = {
         ...accountState,
         balance,
         sequenceNumber: sequence_number
       }
-
       // Update context
       setState(updatedState)
-
       // Update localStorage
       saveLocalAccount(updatedState)
-
       // Update cache
       client.writeData({
         data: {
@@ -102,10 +100,16 @@ const Account = () => {
   })
 
   useEffect(() => {
-    if (accountState && (!accountState.balance || +accountState.balance < 50)) {
-      mintCoin()
+    if (checkState) {
+      if (
+        accountState &&
+        accountState.address &&
+        (!accountState.balance || +accountState.balance < 50)
+      ) {
+        mintCoin()
+      }
     }
-  }, [accountState])
+  }, [accountState, checkState, mintCoin])
 
   useEffect(() => {
     if (
@@ -138,35 +142,32 @@ const Account = () => {
           event_type: 'mint'
         }
 
-        // Get events from localStorage, if null, initialize with []
-        const oldEventsList = getLocalEvents() || []
-
-        const newEventsList = [storedEvent, ...oldEventsList]
-
+        const newEventsList = [storedEvent, ...events]
         saveLocalEvents(newEventsList)
+        client.writeData({
+          data: {
+            events: newEventsList
+          }
+        })
       }
     }
   }, [newTxnVersion, receivedEvents])
 
   return (
     <AccountDiv>
+      {(!accountState || !accountState.address || loading) && <Loader />}
+
       {error && <p>Ooobs, something went wrong in minting coins.</p>}
 
-      {accountState && !error && (
+      {accountState && accountState.address && !loading && !error && (
         <>
           <div className='address'>
             <p>{accountState && accountState.address}</p>
           </div>
 
           <div className='balance'>
-            {accountState && !loading && accountState.balance && (
-              <>
-                <div>Balance: {accountState.balance / 1000000}</div>
-                <img src='/assets/libra-coin.png' width='30' alt='libra' />
-              </>
-            )}
-
-            {loading && <p>Minting coins ...</p>}
+            <div>Balance: {accountState.balance / 1000000}</div>
+            <img src='/assets/libra-coin.png' width='30' alt='libra' />
           </div>
 
           <div className='qr-code'>

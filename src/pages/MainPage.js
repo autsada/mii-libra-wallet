@@ -9,7 +9,6 @@ const MainPage = () => {
   return (
     <>
       {openModal && <Modal />}
-      {/* <Main accountState={accountState} /> */}
       <Main />
     </>
   )

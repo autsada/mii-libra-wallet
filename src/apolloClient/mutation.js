@@ -45,8 +45,8 @@ export const TRANSFER_COINS = gql`
       secretKey: $secretKey
     ) {
       version
-      signed_transaction {
-        signed_txn {
+      transaction {
+        transaction {
           sequence_number
           from_account
           to_account

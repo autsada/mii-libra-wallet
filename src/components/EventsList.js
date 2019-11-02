@@ -1,29 +1,25 @@
-import React, { useContext } from 'react'
+import React from 'react'
+import { useQuery } from '@apollo/react-hooks'
 import { format } from 'date-fns'
-import { Waypoint } from 'react-waypoint'
+// import { Waypoint } from 'react-waypoint'
 import NumberFormat from 'react-number-format'
-// import { makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import styled from 'styled-components'
 
-import { EventsContext } from '../hooks/eventsContext'
+// import { EventsContext } from '../hooks/eventsContext'
+import { GET_EVENTS } from '../apolloClient/query'
 
-// const useStyles = makeStyles({
-//   card: {
-//     minWidth: 275
-//   },
-//   bullet: {
-//     display: 'inline-block',
-//     margin: '0 2px',
-//     transform: 'scale(0.8)'
-//   },
-//   title: {
-//     fontSize: 14
-//   },
-//   pos: {
-//     marginBottom: 12
-//   }
-// })
+const useStyles = makeStyles({
+  card: {
+    maxHeight: 80,
+    margin: 'auto',
+    padding: 0
+  },
+  content: {
+    maxWidth: '100%'
+  }
+})
 
 const Div = styled.div`
   width: 80%;
@@ -47,12 +43,13 @@ const Div = styled.div`
 
   @media ${props => props.theme.sm} {
     width: 98%;
+    max-height: 100%;
     margin-top: 0;
   }
 
   .event {
-    height: 10%;
-    margin: 0.5rem auto;
+    height: 8%;
+    margin: 0.3rem auto;
   }
 `
 
@@ -84,82 +81,109 @@ const CardDetail = styled(CardContent)`
 `
 
 const EventsList = () => {
-  // const classes = useStyles()
-  const { eventsList } = useContext(EventsContext)
+  const classes = useStyles()
+
+  const { data } = useQuery(GET_EVENTS)
+
+  // function loadMoreEvents(index) {
+  //   if (displayEvents) {
+  //     const prevList = displayEvents
+  //     const prevListLen = prevList.length
+  //     const totalListLen = eventsList.length
+
+  //     if (index === prevListLen - 1 && index < totalListLen - 1) {
+  //       setTimeout(() => {
+  //         setLoadMore(true)
+  //         getDisplayEvents([
+  //           ...prevList,
+  //           ...eventsList.slice(index + 1, index + 2)
+  //         ])
+  //       }, 1000)
+  //     }
+  //   }
+  // }
+
+  // const onLeaveHandler = () => setLoadMore(false)
 
   return (
     <Div>
-      {!eventsList && <p>No activity</p>}
-      {eventsList &&
-        eventsList.map((event, i) => (
-          <Waypoint key={event.date} onEnter={() => {}}>
-            <Card className='event'>
-              <CardDetail>
-                <div className='event-details'>
-                  <div className='event-item'>
-                    <span style={{ fontWeight: 'bold' }}>Date:</span>{' '}
-                    <span>
-                      {format(
-                        new Date(
-                          event.event_type === 'mint'
-                            ? +event.date
-                            : +event.date * 1000
-                        ),
-                        'dd-MMM-yyyy: hh:mm a'
-                      )}
-                    </span>
-                  </div>
-                  <div className='event-item'>
-                    <span style={{ fontWeight: 'bold' }}>TxnVersion:</span>{' '}
-                    <span>{event.transaction_version}</span>
-                  </div>
-                  <div className='event-item'>
-                    <span
-                      style={{
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      Type:
-                    </span>{' '}
-                    <span
-                      style={{
-                        fontWeight: 'bolder',
-                        color: `${
-                          event.event_type === 'received'
-                            ? 'green'
-                            : event.event_type === 'sent'
-                            ? 'red'
-                            : 'blue'
-                        }`
-                      }}
-                    >
-                      {event.event_type.toUpperCase()}
-                    </span>
-                  </div>
-                  <div className='event-item'>
-                    <span style={{ fontWeight: 'bolder', fontSize: '1rem' }}>
-                      Amount:
-                    </span>{' '}
-                    <NumberFormat
-                      value={event.amount / 1000000}
-                      displayType={'text'}
-                      thousandSeparator={true}
-                      prefix={'Lib: '}
-                      renderText={value => <span>{value}</span>}
-                    />
-                  </div>
+      {!data ||
+        !data.events ||
+        (data.events.length === 0 && <p>No activity</p>)}
+      {data &&
+        data.events.length > 0 &&
+        data.events.map((event, i) => (
+          // <Waypoint
+          //   onEnter={() => loadMoreEvents(i)}
+          //   onLeave={onLeaveHandler}
+          // >
+          <Card className={`event ${classes.card}`} key={event.date}>
+            <CardDetail className={classes.content}>
+              <div className='event-details'>
+                <div className='event-item'>
+                  <span style={{ fontWeight: 'bold' }}>Date:</span>{' '}
+                  <span>
+                    {format(
+                      new Date(
+                        event.event_type === 'mint'
+                          ? +event.date
+                          : +event.date * 1000
+                      ),
+                      'dd-MMM-yyyy: hh:mm a'
+                    )}
+                  </span>
                 </div>
-                <div className='event-address'>
-                  <span style={{ fontWeight: 'bold' }}>
-                    {event.event_type === 'sent' ? 'To' : 'From'}:
+                <div className='event-item'>
+                  <span style={{ fontWeight: 'bold' }}>TxnVersion:</span>{' '}
+                  <span>{event.transaction_version}</span>
+                </div>
+                <div className='event-item'>
+                  <span
+                    style={{
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Type:
                   </span>{' '}
-                  {event.event_type === 'sent'
-                    ? event.toAccount
-                    : event.fromAccount}
+                  <span
+                    style={{
+                      fontWeight: 'bolder',
+                      color: `${
+                        event.event_type === 'received'
+                          ? 'green'
+                          : event.event_type === 'sent'
+                          ? 'red'
+                          : 'blue'
+                      }`
+                    }}
+                  >
+                    {event.event_type.toUpperCase()}
+                  </span>
                 </div>
-              </CardDetail>
-            </Card>
-          </Waypoint>
+                <div className='event-item'>
+                  <span style={{ fontWeight: 'bolder', fontSize: '1rem' }}>
+                    Amount:
+                  </span>{' '}
+                  <NumberFormat
+                    value={event.amount / 1000000}
+                    displayType={'text'}
+                    thousandSeparator={true}
+                    prefix={'Lib: '}
+                    renderText={value => <span>{value}</span>}
+                  />
+                </div>
+              </div>
+              <div className='event-address'>
+                <span style={{ fontWeight: 'bold' }}>
+                  {event.event_type === 'sent' ? 'To' : 'From'}:
+                </span>{' '}
+                {event.event_type === 'sent'
+                  ? event.toAccount
+                  : event.fromAccount}
+              </div>
+            </CardDetail>
+          </Card>
+          // </Waypoint>
         ))}
     </Div>
   )

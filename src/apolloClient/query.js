@@ -48,8 +48,8 @@ export const QUERY_BY_SEQUENCE_NUMBER = gql`
   query QUERY_BY_SEQUENCE_NUMBER($address: String!, $sequenceNumber: Int!) {
     queryBySequenceNumber(address: $address, sequenceNumber: $sequenceNumber) {
       version
-      signed_transaction {
-        signed_txn {
+      transaction {
+        transaction {
           from_account
           to_account
           amount

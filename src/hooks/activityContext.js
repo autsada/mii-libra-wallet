@@ -1,11 +1,12 @@
 import React, { useState, createContext, useContext } from 'react'
 
-import { ManualTransferContext } from './manualTransferContext'
+import { ManualTransferContext } from './index'
 
 export const ActivityContext = createContext()
 
 export const ActivityProvider = ({ children }) => {
   const { clearTransferInputs } = useContext(ManualTransferContext)
+  // const { getEvents, clearDisplayEvents } = useContext(EventsContext)
   const [isManual, setIsManual] = useState(false)
   const [isScanQR, setIsScanQR] = useState(false)
   const [openModal, setOpenModal] = useState(false)
@@ -52,6 +53,12 @@ export const ActivityProvider = ({ children }) => {
 
   const toggleShowEvents = () => {
     setShowEvents(!showEvents)
+
+    // if (showEvents) {
+    //   clearDisplayEvents()
+    // } else {
+    //   getEvents()
+    // }
   }
 
   return (

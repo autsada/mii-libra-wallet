@@ -4,8 +4,8 @@ export const RECEIVED_COINS_NOTIFIER = gql`
   subscription RECEIVED_COINS_NOTIFIER($receiverAddress: String!) {
     receivedCoins(receiverAddress: $receiverAddress) {
       version
-      signed_transaction {
-        signed_txn {
+      transaction {
+        transaction {
           sequence_number
           amount
           from_account

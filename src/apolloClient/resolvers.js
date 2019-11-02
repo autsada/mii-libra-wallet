@@ -4,11 +4,11 @@ const resolvers = {
   User: {
     balance: (_user, _, { cache }) => {
       const { user } = cache.readQuery({ query: GET_CURRENT_USER })
-      return user.balance
+      return user.balance || undefined
     },
     sequenceNumber: (_user, _, { cache }) => {
       const { user } = cache.readQuery({ query: GET_CURRENT_USER })
-      return user.sequenceNumber
+      return user.sequenceNumber || undefined
     }
   },
   EventData: {

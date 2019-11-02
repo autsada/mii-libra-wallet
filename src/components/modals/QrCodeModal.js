@@ -138,7 +138,6 @@ const QrCodeModal = () => {
             className='qr-reader'
           />
         </div>
-
         <div className='to-manual'>
           <Button className='switch-mode' onClick={closeScanQR}>
             Close

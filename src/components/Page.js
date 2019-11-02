@@ -49,7 +49,7 @@ const InnerPage = styled.div`
 
   @media ${props => props.theme.sm} {
     max-width: 100%;
-    padding: 0.1rem;
+    padding: 0;
   }
 `
 

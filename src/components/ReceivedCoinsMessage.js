@@ -1,45 +1,53 @@
 import { useEffect, useContext } from 'react'
-import { useSubscription } from '@apollo/react-hooks'
+import { useApolloClient, useSubscription, useQuery } from '@apollo/react-hooks'
 
 import { RECEIVED_COINS_NOTIFIER } from '../apolloClient/subscription'
-import { EventsContext, QueryContext } from '../hooks'
+import { GET_EVENTS } from '../apolloClient/query'
+import { QueryContext } from '../hooks'
 import {
-  getLocalAccount,
   saveLocalAccount,
-  getLocalEvents,
   saveLocalEvents
 } from '../helpers/getLocalStorageData'
 
-const ReceivedCoinsMessage = ({ address }) => {
-  const { getEvents } = useContext(EventsContext)
-  const { setState } = useContext(QueryContext)
+const ReceivedCoinsMessage = () => {
+  const { accountState, setState } = useContext(QueryContext)
+
+  const client = useApolloClient()
+
+  const {
+    data: { events }
+  } = useQuery(GET_EVENTS)
 
   const { data } = useSubscription(RECEIVED_COINS_NOTIFIER, {
-    variables: { receiverAddress: address }
+    variables: { receiverAddress: accountState && accountState.address }
   })
 
   useEffect(() => {
     if (
       data &&
       data.receivedCoins &&
-      data.receivedCoins.signed_transaction &&
-      data.receivedCoins.signed_transaction.signed_txn
+      data.receivedCoins.transaction &&
+      data.receivedCoins.transaction.transaction
     ) {
       const {
         version,
-        signed_transaction: {
-          signed_txn: { amount, expiration_time, from_account, to_account }
+        transaction: {
+          transaction: { amount, expiration_time, from_account, to_account }
         }
       } = data.receivedCoins
 
-      const userState = getLocalAccount()
-
-      // Update state
-      if (userState) {
-        userState.balance = +userState.balance + +amount
+      const updatedState = {
+        ...accountState,
+        balance: (+accountState.balance + +amount).toString()
       }
-      saveLocalAccount(userState)
-      setState(userState)
+
+      saveLocalAccount(updatedState)
+      setState(updatedState)
+      client.writeData({
+        data: {
+          user: updatedState
+        }
+      })
 
       // Update event
       const newEvent = {
@@ -52,11 +60,14 @@ const ReceivedCoinsMessage = ({ address }) => {
         transaction_version: version
       }
 
-      // const oldEvents = JSON.parse(localStorage.getItem('Events'))
-      const oldEvents = getLocalEvents() || []
-      const newEvents = [newEvent, ...oldEvents]
+      const newEvents = [newEvent, ...events]
       saveLocalEvents(newEvents)
-      getEvents()
+
+      client.writeData({
+        data: {
+          events: newEvents
+        }
+      })
     }
   }, [data])
 

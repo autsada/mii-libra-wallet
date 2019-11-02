@@ -23,9 +23,9 @@ const ContextProvider = ({ children }) => (
   <ProviderComposer
     contexts={[
       <ManualTransferProvider />,
+      <EventsProvider />,
       <ActivityProvider />,
       <QrCodeProvider />,
-      <EventsProvider />,
       <QueryProvider />,
       <RouterProvider />
     ]}
