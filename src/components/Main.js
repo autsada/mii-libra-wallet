@@ -144,142 +144,147 @@ const Main = () => {
   })
 
   useEffect(() => {
-    // First case: already have account in localStorage whether it is already in testnet system or not
-    if (accountState && accountState.address) {
-      const getLatestState = () => {
-        return new Promise((resolve, reject) => {
-          let callCount = 0
+    localStorage.removeItem('User')
+    localStorage.removeItem('Events')
+  })
 
-          const query = setInterval(() => {
-            callCount++
+  // useEffect(() => {
+  //   // First case: already have account in localStorage whether it is already in testnet system or not
+  //   if (accountState && accountState.address) {
+  //     const getLatestState = () => {
+  //       return new Promise((resolve, reject) => {
+  //         let callCount = 0
 
-            if (queryAccount && queryAccount.data) {
-              const { data } = queryAccount
-              if (
-                data &&
-                data.queryByAddress &&
-                data.queryByAddress.response_items &&
-                data.queryByAddress.response_items[0] &&
-                data.queryByAddress.response_items[0].get_account_state_response
-              ) {
-                resolve(
-                  data.queryByAddress.response_items[0]
-                    .get_account_state_response
-                )
-                clearInterval(query)
-              }
+  //         const query = setInterval(() => {
+  //           callCount++
 
-              if (queryAccount && queryAccount.error) {
-                clearInterval(query)
-                reject(queryAccount.error)
-              }
+  //           if (queryAccount && queryAccount.data) {
+  //             const { data } = queryAccount
+  //             if (
+  //               data &&
+  //               data.queryByAddress &&
+  //               data.queryByAddress.response_items &&
+  //               data.queryByAddress.response_items[0] &&
+  //               data.queryByAddress.response_items[0].get_account_state_response
+  //             ) {
+  //               resolve(
+  //                 data.queryByAddress.response_items[0]
+  //                   .get_account_state_response
+  //               )
+  //               clearInterval(query)
+  //             }
 
-              if (callCount > 10 && queryAccount && !queryAccount.data) {
-                clearInterval(query)
-                reject('Account does not exists')
-              }
-            }
-          }, 200)
-        })
-      }
+  //             if (queryAccount && queryAccount.error) {
+  //               clearInterval(query)
+  //               reject(queryAccount.error)
+  //             }
 
-      const getState = async () => {
-        try {
-          const state = await getLatestState()
+  //             if (callCount > 10 && queryAccount && !queryAccount.data) {
+  //               clearInterval(query)
+  //               reject('Account does not exists')
+  //             }
+  //           }
+  //         }, 200)
+  //       })
+  //     }
 
-          if (state) {
-            // Found state in testnet system
-            const {
-              blob: {
-                blob: { balance, sequence_number }
-              }
-            } = state.account_state_with_proof
+  //     const getState = async () => {
+  //       try {
+  //         const state = await getLatestState()
 
-            const updatedUser = {
-              ...accountState,
-              balance: balance || 0,
-              sequenceNumber: sequence_number
-            }
+  //         if (state) {
+  //           // Found state in testnet system
+  //           const {
+  //             blob: {
+  //               blob: { balance, sequence_number }
+  //             }
+  //           } = state.account_state_with_proof
 
-            // Update context
-            setState(updatedUser)
+  //           const updatedUser = {
+  //             ...accountState,
+  //             balance: balance || 0,
+  //             sequenceNumber: sequence_number
+  //           }
 
-            // Confirm that the state is check
-            setCheckState(true)
+  //           // Update context
+  //           setState(updatedUser)
 
-            // Update localStorage
-            saveLocalAccount(updatedUser)
+  //           // Confirm that the state is check
+  //           setCheckState(true)
 
-            // Update cache
-            client.writeData({
-              data: {
-                user: updatedUser
-              }
-            })
-          } else {
-            // Account does not exist in the testnet system
-            const resetAccount = {
-              ...accountState,
-              balance: 0,
-              sequenceNumber: undefined
-            }
-            // Update context
-            setState(resetAccount)
+  //           // Update localStorage
+  //           saveLocalAccount(updatedUser)
 
-            // Confirm that the state is check
-            setCheckState(true)
+  //           // Update cache
+  //           client.writeData({
+  //             data: {
+  //               user: updatedUser
+  //             }
+  //           })
+  //         } else {
+  //           // Account does not exist in the testnet system
+  //           const resetAccount = {
+  //             ...accountState,
+  //             balance: 0,
+  //             sequenceNumber: undefined
+  //           }
+  //           // Update context
+  //           setState(resetAccount)
 
-            // Update localStorage
-            saveLocalAccount(resetAccount)
+  //           // Confirm that the state is check
+  //           setCheckState(true)
 
-            // Update cache
-            client.writeData({
-              data: {
-                user: resetAccount
-              }
-            })
-          }
-        } catch (error) {
-          // Account does not exist in the testnet system
-          const resetAccount = {
-            ...accountState,
-            balance: 0,
-            sequenceNumber: undefined
-          }
-          // Update context
-          setState(resetAccount)
+  //           // Update localStorage
+  //           saveLocalAccount(resetAccount)
 
-          // Confirm that the state is check
-          setCheckState(true)
+  //           // Update cache
+  //           client.writeData({
+  //             data: {
+  //               user: resetAccount
+  //             }
+  //           })
+  //         }
+  //       } catch (error) {
+  //         // Account does not exist in the testnet system
+  //         const resetAccount = {
+  //           ...accountState,
+  //           balance: 0,
+  //           sequenceNumber: undefined
+  //         }
+  //         // Update context
+  //         setState(resetAccount)
 
-          // Update localStorage
-          saveLocalAccount(resetAccount)
+  //         // Confirm that the state is check
+  //         setCheckState(true)
 
-          // Update cache
-          client.writeData({
-            data: {
-              user: resetAccount
-            }
-          })
-        }
-      }
-      getState()
-    }
-    // Second case: no account in local storage yet, so we need to create one.
-    else {
-      const createUser = async () => {
-        try {
-          await createAccount()
-        } catch (err) {
-          console.log(err)
-        }
-      }
-      createUser()
+  //         // Update localStorage
+  //         saveLocalAccount(resetAccount)
 
-      // Clear events in local storage if any
-      localStorage.removeItem('Events')
-    }
-  }, [queryAccount && queryAccount.data, client])
+  //         // Update cache
+  //         client.writeData({
+  //           data: {
+  //             user: resetAccount
+  //           }
+  //         })
+  //       }
+  //     }
+  //     getState()
+  //   }
+  //   // Second case: no account in local storage yet, so we need to create one.
+  //   else {
+  //     const createUser = async () => {
+  //       try {
+  //         await createAccount()
+  //       } catch (err) {
+  //         console.log(err)
+  //       }
+  //     }
+  //     createUser()
+
+  //     // Clear events in local storage if any
+  //     localStorage.removeItem('Events')
+  //   }
+  // }, [queryAccount && queryAccount.data, client])
 
   return (
     <MainDiv>
