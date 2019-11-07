@@ -231,7 +231,8 @@ const ManualTransfer = () => {
     transferArgs: { receiver, amount },
     handleChange,
     handleBlur,
-    receiverError
+    receiverError,
+    amountError
   } = useContext(ManualTransferContext)
 
   const { transferMoney, loading, error } = useTransferCoins({
