@@ -88,7 +88,11 @@ export const ManualTransferProvider = ({ children }) => {
     }
   }
 
-  const clearTransferInputs = () => setTransferArgs(transferArgsDefault)
+  const clearTransferInputs = () => {
+    setTransferArgs(transferArgsDefault)
+    setReceiverError(false)
+    setAmountError(false)
+  }
 
   return (
     <ManualTransferContext.Provider

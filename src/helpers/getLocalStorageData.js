@@ -5,7 +5,8 @@ export const saveLocalAccount = updatedUser => {
   localStorage.setItem('User', JSON.stringify(updatedUser))
 }
 
-export const getLocalEvents = () => JSON.parse(localStorage.getItem('Events'))
+export const getLocalEvents = () =>
+  JSON.parse(localStorage.getItem('Events')) || []
 
 export const saveLocalEvents = newEvents => {
   localStorage.removeItem('Events')

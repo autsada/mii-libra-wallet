@@ -1,15 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
+import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import QRCode from 'qrcode.react'
+import NumberFormat from 'react-number-format'
 
-import { QueryContext } from '../hooks'
-import { MINT_COINS } from '../apolloClient/mutation'
-import { QUERY_RECEIVED_EVENTS, GET_EVENTS } from '../apolloClient/query'
-import {
-  saveLocalAccount,
-  saveLocalEvents
-} from '../helpers/getLocalStorageData'
+import { QueryContext, useMintCoins } from '../hooks'
 import Loader from './Loader'
 
 const AccountDiv = styled.div`
@@ -44,60 +38,8 @@ const AccountDiv = styled.div`
 `
 
 const Account = ({ checkState }) => {
-  const { accountState, setState } = useContext(QueryContext)
-  const [newTxnVersion, setNewTxnVersion] = useState(null)
-
-  const client = useApolloClient()
-
-  const {
-    data: { events }
-  } = useQuery(GET_EVENTS)
-
-  const receivedEvents = useQuery(QUERY_RECEIVED_EVENTS, {
-    variables: {
-      address: (accountState && accountState.address) || ''
-    }
-  })
-
-  const [mintCoin, { loading, error }] = useMutation(MINT_COINS, {
-    variables: {
-      amount: 1000,
-      address: accountState && accountState.address
-    },
-    onCompleted({ mintCoin }) {
-      const {
-        version,
-        blob: {
-          blob: { balance, sequence_number }
-        }
-      } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof
-
-      setNewTxnVersion(version)
-      const updatedState = {
-        ...accountState,
-        balance,
-        sequenceNumber: sequence_number
-      }
-      // Update context
-      setState(updatedState)
-      // Update localStorage
-      saveLocalAccount(updatedState)
-      // Update cache
-      client.writeData({
-        data: {
-          user: updatedState
-        }
-      })
-    },
-    refetchQueries: [
-      {
-        query: QUERY_RECEIVED_EVENTS,
-        variables: {
-          address: accountState && accountState.address
-        }
-      }
-    ]
-  })
+  const { accountState } = useContext(QueryContext)
+  const { mintCoin, loading, error } = useMintCoins(accountState)
 
   useEffect(() => {
     if (checkState) {
@@ -110,48 +52,6 @@ const Account = ({ checkState }) => {
       }
     }
   }, [accountState, checkState, mintCoin])
-
-  useEffect(() => {
-    if (
-      newTxnVersion &&
-      receivedEvents &&
-      receivedEvents.data &&
-      receivedEvents.data.queryReceivedEvents &&
-      receivedEvents.data.queryReceivedEvents.length > 0
-    ) {
-      const newEvent = receivedEvents.data.queryReceivedEvents.find(
-        event => event.transaction_version === newTxnVersion
-      )
-
-      if (newEvent) {
-        const {
-          transaction_version,
-          event: {
-            sequence_number,
-            event_data: { address, amount }
-          }
-        } = newEvent
-
-        const storedEvent = {
-          transaction_version,
-          sequenceNumber: sequence_number,
-          fromAccount: address,
-          toAccount: accountState && accountState.address,
-          amount,
-          date: Date.now().toString(),
-          event_type: 'mint'
-        }
-
-        const newEventsList = [storedEvent, ...events]
-        saveLocalEvents(newEventsList)
-        client.writeData({
-          data: {
-            events: newEventsList
-          }
-        })
-      }
-    }
-  }, [newTxnVersion, receivedEvents])
 
   return (
     <AccountDiv>
@@ -166,7 +66,13 @@ const Account = ({ checkState }) => {
           </div>
 
           <div className='balance'>
-            <div>Balance: {accountState.balance / 1000000}</div>
+            <NumberFormat
+              value={accountState.balance / 1000000}
+              displayType={'text'}
+              thousandSeparator={true}
+              prefix={'Lib: '}
+              renderText={value => <span>{value}</span>}
+            />
             <img src='/assets/libra-coin.png' width='30' alt='libra' />
           </div>
 

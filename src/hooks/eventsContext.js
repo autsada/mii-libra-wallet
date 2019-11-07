@@ -1,20 +1,26 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
+import { useQuery } from '@apollo/react-hooks'
 
 import { getLocalEvents } from '../helpers/getLocalStorageData'
+import { GET_EVENTS } from '../apolloClient/query'
 
 export const EventsContext = createContext()
 
 export const EventsProvider = ({ children }) => {
-  const [eventsList, setEventsList] = useState(getLocalEvents() || [])
-  // const [displayEvents, setDisplayEvents] = useState(null)
+  const { data } = useQuery(GET_EVENTS)
+  const [eventsList, setEventsList] = useState(getLocalEvents())
+  const [displayedEvents, setDisplayedEvents] = useState(
+    data.events.slice(0, 3)
+  )
+  const [hasMore, setHasMore] = useState(false)
 
-  // useEffect(() => {
-  //   setDisplayEvents(
-  //     (eventsList && eventsList.length > 5
-  //       ? eventsList.slice(0, 5)
-  //       : eventsList) || []
-  //   )
-  // }, [])
+  useEffect(() => {
+    if (data.events.length > displayedEvents.length) {
+      setHasMore(true)
+    } else {
+      setHasMore(false)
+    }
+  }, [displayedEvents])
 
   const getEvents = () => {
     const evts = getLocalEvents()
@@ -22,21 +28,37 @@ export const EventsProvider = ({ children }) => {
     setEventsList(evts)
   }
 
-  // const getDisplayEvents = evts => {
-  //   setDisplayEvents(evts)
-  // }
+  const loadMore = () => {
+    if (hasMore) {
+      setTimeout(() => {
+        setDisplayedEvents([
+          ...displayedEvents,
+          ...data.events.slice(
+            displayedEvents.length,
+            data.events.length - displayedEvents.length > 3
+              ? displayedEvents.length + 3
+              : data.events.length
+          )
+        ])
+      }, 1000)
+    }
+  }
 
-  // const clearDisplayEvents = () => {
-  //   setDisplayEvents(
-  //     (eventsList && eventsList.length > 5
-  //       ? eventsList.slice(0, 5)
-  //       : eventsList) || []
-  //   )
-  // }
+  const clearDisplayedEvents = () => {
+    setDisplayedEvents(
+      data && data.events && data.events.length > 3
+        ? data.events.slice(0, 3)
+        : data.events
+    )
+  }
 
   return (
     <EventsContext.Provider
       value={{
+        displayedEvents,
+        loadMore,
+        hasMore,
+        clearDisplayedEvents,
         eventsList,
         getEvents
       }}

@@ -1,15 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
+import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 
-import { ActivityContext, QueryContext } from '../hooks'
-import { CREATE_ACCOUNT } from '../apolloClient/mutation'
-import { QUERY_BY_ADDRESS } from '../apolloClient/query'
+import {
+  ActivityContext,
+  QueryContext,
+  useCreateAccount,
+  useQueryState
+} from '../hooks'
 import Head from './Head'
 import Loader from './Loader'
 import EventsList from './EventsList'
 import ReceivedCoinsMessage from './ReceivedCoinsMessage'
-import { saveLocalAccount } from '../helpers/getLocalStorageData'
 import Account from './Account'
 
 const MainDiv = styled.div`
@@ -37,6 +38,10 @@ const MainDiv = styled.div`
   @media ${props => props.theme.sm} {
     width: 100%;
     height: 100vh;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
     margin: 0;
   }
 
@@ -104,190 +109,42 @@ const Main = () => {
   const { startSendCoins, showEvents, toggleShowEvents } = useContext(
     ActivityContext
   )
-  const { accountState, setState } = useContext(QueryContext)
-  const [checkState, setCheckState] = useState(false)
+  const { accountState } = useContext(QueryContext)
+  const {
+    createAccount,
+    createAccountLoading,
+    createAccountError
+  } = useCreateAccount()
 
-  const client = useApolloClient()
-
-  const queryAccount = useQuery(QUERY_BY_ADDRESS, {
-    variables: {
-      address: (accountState && accountState.address) || ''
-    }
-  })
-
-  const [createAccount, { loading, error }] = useMutation(CREATE_ACCOUNT, {
-    onCompleted({ createAccount }) {
-      if (createAccount) {
-        const newAccount = {
-          ...createAccount,
-          balance: 0,
-          sequenceNumber: undefined
-        }
-
-        // Update context
-        setState(newAccount)
-
-        // Confirm that the state is check
-        setCheckState(true)
-
-        // Update localStorage
-        saveLocalAccount(newAccount)
-
-        // Update cache
-        client.writeData({
-          data: {
-            user: newAccount
-          }
-        })
-      }
-    }
-  })
+  const { checkState, setCheckState } = useQueryState(accountState)
 
   useEffect(() => {
-    // First case: already have account in localStorage whether it is already in testnet system or not
-    if (accountState && accountState.address) {
-      const getLatestState = () => {
-        return new Promise((resolve, reject) => {
-          let callCount = 0
-
-          const query = setInterval(() => {
-            callCount++
-
-            if (queryAccount && queryAccount.data) {
-              const { data } = queryAccount
-              if (
-                data &&
-                data.queryByAddress &&
-                data.queryByAddress.response_items &&
-                data.queryByAddress.response_items[0] &&
-                data.queryByAddress.response_items[0].get_account_state_response
-              ) {
-                resolve(
-                  data.queryByAddress.response_items[0]
-                    .get_account_state_response
-                )
-                clearInterval(query)
-              }
-
-              if (queryAccount && queryAccount.error) {
-                clearInterval(query)
-                reject(queryAccount.error)
-              }
-
-              if (callCount > 10 && queryAccount && !queryAccount.data) {
-                clearInterval(query)
-                reject('Account does not exists')
-              }
-            }
-          }, 200)
-        })
-      }
-
-      const getState = async () => {
-        try {
-          const state = await getLatestState()
-
-          if (state) {
-            // Found state in testnet system
-            const {
-              blob: {
-                blob: { balance, sequence_number }
-              }
-            } = state.account_state_with_proof
-
-            const updatedUser = {
-              ...accountState,
-              balance: balance || 0,
-              sequenceNumber: sequence_number
-            }
-
-            // Update context
-            setState(updatedUser)
-
-            // Confirm that the state is check
-            setCheckState(true)
-
-            // Update localStorage
-            saveLocalAccount(updatedUser)
-
-            // Update cache
-            client.writeData({
-              data: {
-                user: updatedUser
-              }
-            })
-          } else {
-            // Account does not exist in the testnet system
-            const resetAccount = {
-              ...accountState,
-              balance: 0,
-              sequenceNumber: undefined
-            }
-            // Update context
-            setState(resetAccount)
-
-            // Confirm that the state is check
-            setCheckState(true)
-
-            // Update localStorage
-            saveLocalAccount(resetAccount)
-
-            // Update cache
-            client.writeData({
-              data: {
-                user: resetAccount
-              }
-            })
-          }
-        } catch (error) {
-          // Account does not exist in the testnet system
-          const resetAccount = {
-            ...accountState,
-            balance: 0,
-            sequenceNumber: undefined
-          }
-          // Update context
-          setState(resetAccount)
-
-          // Confirm that the state is check
-          setCheckState(true)
-
-          // Update localStorage
-          saveLocalAccount(resetAccount)
-
-          // Update cache
-          client.writeData({
-            data: {
-              user: resetAccount
-            }
-          })
-        }
-      }
-      getState()
-    }
-    // Second case: no account in local storage yet, so we need to create one.
-    else {
+    localStorage.removeItem('Events')
+    if (
+      !accountState ||
+      (accountState && (!accountState.address || !accountState.secretKey))
+    ) {
       const createUser = async () => {
         try {
-          await createAccount()
+          createAccount().then(() => setCheckState(true))
         } catch (err) {
           console.log(err)
         }
       }
       createUser()
-
-      // Clear events in local storage if any
-      localStorage.removeItem('Events')
     }
-  }, [queryAccount && queryAccount.data, client])
+  }, [accountState])
 
   return (
     <MainDiv>
       <Head />
       <div className='account'>
-        {!accountState || (!accountState.address && loading && <Loader />)}
+        {!accountState ||
+          (!accountState.address && createAccountLoading && <Loader />)}
 
-        {error && <p>Ooobs, something went wrong in creating account.</p>}
+        {createAccountError && (
+          <p>Ooobs, something went wrong in creating account.</p>
+        )}
 
         <Account checkState={checkState} />
       </div>
@@ -299,7 +156,9 @@ const Main = () => {
         <div className='button-text'>Activities</div>
       </div>
 
-      {showEvents && <EventsList />}
+      {showEvents && (
+        <EventsList address={(accountState && accountState.address) || ''} />
+      )}
 
       {accountState && <ReceivedCoinsMessage />}
     </MainDiv>

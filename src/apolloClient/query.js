@@ -64,6 +64,24 @@ export const QUERY_RECEIVED_EVENTS = gql`
   query QUERY_RECEIVED_EVENTS($address: String!) {
     queryReceivedEvents(address: $address) {
       transaction_version
+      expiration_time
+      event {
+        sequence_number
+        event_data {
+          amount
+          address
+          event_type
+        }
+      }
+    }
+  }
+`
+
+export const QUERY_SENT_EVENTS = gql`
+  query QUERY_SENT_EVENTS($address: String!) {
+    querySentEvents(address: $address) {
+      transaction_version
+      expiration_time
       event {
         sequence_number
         event_data {

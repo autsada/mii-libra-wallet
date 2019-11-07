@@ -13,6 +13,7 @@ const cache = new InMemoryCache({ addTypename: false })
 // Create an http link:
 const httpLink = new HttpLink({
   uri: 'https://libra-graphql.herokuapp.com/'
+  // uri: 'http://localhost:8000'
 })
 
 // Create a WebSocket link:
@@ -48,8 +49,8 @@ const client = new ApolloClient({
 // Initialize local state
 client.writeData({
   data: {
-    user: JSON.parse(localStorage.getItem('User')) || {},
-    events: JSON.parse(localStorage.getItem('Events')) || []
+    // user: JSON.parse(localStorage.getItem('User')) || {},
+    // events: JSON.parse(localStorage.getItem('Events')) || []
   }
 })
 

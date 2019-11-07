@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { useMutation, useQuery } from '@apollo/react-hooks'
 import styled from 'styled-components'
 import { TextField, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -9,18 +8,9 @@ import {
   ActivityContext,
   QueryContext,
   ManualTransferContext,
-  QrCodeContext
+  QrCodeContext,
+  useTransferCoins
 } from '../../hooks'
-import { TRANSFER_COINS } from '../../apolloClient/mutation'
-import {
-  QUERY_BY_ADDRESS,
-  GET_CURRENT_USER,
-  GET_EVENTS
-} from '../../apolloClient/query'
-import {
-  saveLocalAccount,
-  saveLocalEvents
-} from '../../helpers/getLocalStorageData'
 import Loader from '../Loader'
 
 const useStyles = makeStyles(theme => ({
@@ -235,104 +225,19 @@ const Div = styled.div`
 const ManualTransfer = () => {
   const classes = useStyles()
   const { cancelManual, scanQR } = useContext(ActivityContext)
-  const { accountState, setState } = useContext(QueryContext)
-  const { qrValue, clearQrValue } = useContext(QrCodeContext)
+  const { accountState } = useContext(QueryContext)
+  const { qrValue } = useContext(QrCodeContext)
   const {
     transferArgs: { receiver, amount },
     handleChange,
     handleBlur,
-    receiverError,
-    amountError,
-    clearTransferInputs
+    receiverError
   } = useContext(ManualTransferContext)
 
-  const {
-    data: { events }
-  } = useQuery(GET_EVENTS)
-
-  const [transferMoney, { loading, error }] = useMutation(TRANSFER_COINS, {
-    variables: {
-      fromAddress: accountState && accountState.address,
-      sequenceNumber: accountState && accountState.sequenceNumber,
-      toAddress: receiver || qrValue,
-      amount,
-      secretKey: accountState && accountState.secretKey
-    },
-    update(
-      cache,
-      {
-        data: { transferMoney }
-      }
-    ) {
-      const {
-        version,
-        transaction: {
-          transaction: {
-            sequence_number,
-            from_account,
-            to_account,
-            amount,
-            expiration_time
-          }
-        }
-      } = transferMoney
-
-      const updatedState = accountState && {
-        ...accountState,
-        balance: (+accountState.balance - amount).toString(),
-        sequenceNumber: sequence_number + 1
-      }
-
-      console.log(updatedState)
-
-      const newEvent = {
-        date: expiration_time,
-        amount,
-        event_type: 'sent',
-        fromAccount: from_account,
-        sequenceNumber: sequence_number,
-        toAccount: to_account,
-        transaction_version: version
-      }
-
-      // Update user
-      saveLocalAccount(updatedState)
-      setState(updatedState)
-      cache.writeData({
-        data: {
-          user: updatedState
-        }
-      })
-
-      // Update event
-      const newEvents = [newEvent, ...events]
-      console.log(newEvents)
-      saveLocalEvents(newEvents)
-      cache.writeData({
-        data: {
-          events: newEvents
-        }
-      })
-    },
-    onCompleted() {
-      clearTransferInputs()
-      clearQrValue()
-      cancelManual()
-    },
-    refetchQueries: [
-      {
-        query: GET_CURRENT_USER
-      },
-      {
-        query: GET_EVENTS
-      },
-      {
-        query: QUERY_BY_ADDRESS,
-        variables: {
-          address: accountState && accountState.address
-        }
-      }
-    ]
+  const { transferMoney, loading, error } = useTransferCoins({
+    accountState,
+    receiver: receiver || qrValue,
+    transferAmount: amount
   })
 
   const handleSubmit = async e => {

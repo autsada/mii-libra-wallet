@@ -1,5 +1,4 @@
 import React from 'react'
-import { useQuery } from '@apollo/react-hooks'
 import { format } from 'date-fns'
 // import { Waypoint } from 'react-waypoint'
 import NumberFormat from 'react-number-format'
@@ -7,8 +6,8 @@ import { Card, CardContent } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import styled from 'styled-components'
 
-// import { EventsContext } from '../hooks/eventsContext'
-import { GET_EVENTS } from '../apolloClient/query'
+import Loader from './Loader'
+import { useQueryEvents } from './../hooks'
 
 const useStyles = makeStyles({
   card: {
@@ -80,10 +79,9 @@ const CardDetail = styled(CardContent)`
   }
 `
 
-const EventsList = () => {
+const EventsList = ({ address }) => {
   const classes = useStyles()
-
-  const { data } = useQuery(GET_EVENTS)
+  const { events, queryEventsLoading } = useQueryEvents(address)
 
   // function loadMoreEvents(index) {
   //   if (displayEvents) {
@@ -107,28 +105,27 @@ const EventsList = () => {
 
   return (
     <Div>
-      {!data ||
-        !data.events ||
-        (data.events.length === 0 && <p>No activity</p>)}
-      {data &&
-        data.events.length > 0 &&
-        data.events.map((event, i) => (
+      {queryEventsLoading && <Loader />}
+
+      {events && events.length === 0 && !queryEventsLoading && (
+        <p>No activity</p>
+      )}
+
+      {events &&
+        events.length > 0 &&
+        events.map((event, i) => (
           // <Waypoint
           //   onEnter={() => loadMoreEvents(i)}
           //   onLeave={onLeaveHandler}
           // >
-          <Card className={`event ${classes.card}`} key={event.date}>
+          <Card className={`event ${classes.card}`} key={event.expiration_time}>
             <CardDetail className={classes.content}>
               <div className='event-details'>
                 <div className='event-item'>
                   <span style={{ fontWeight: 'bold' }}>Date:</span>{' '}
                   <span>
                     {format(
-                      new Date(
-                        event.event_type === 'mint'
-                          ? +event.date
-                          : +event.date * 1000
-                      ),
+                      new Date(+event.expiration_time * 1000),
                       'dd-MMM-yyyy: hh:mm a'
                     )}
                   </span>
@@ -149,15 +146,21 @@ const EventsList = () => {
                     style={{
                       fontWeight: 'bolder',
                       color: `${
-                        event.event_type === 'received'
+                        event.event.event_data.address.startsWith(
+                          '000000000000000000000000000000000'
+                        )
+                          ? 'blue'
+                          : event.event.event_data.event_type === 'received'
                           ? 'green'
-                          : event.event_type === 'sent'
-                          ? 'red'
-                          : 'blue'
+                          : 'red'
                       }`
                     }}
                   >
-                    {event.event_type.toUpperCase()}
+                    {event.event.event_data.address.startsWith(
+                      '000000000000000000000000000000000'
+                    )
+                      ? 'MINT'
+                      : event.event.event_data.event_type.toUpperCase()}
                   </span>
                 </div>
                 <div className='event-item'>
@@ -165,7 +168,7 @@ const EventsList = () => {
                     Amount:
                   </span>{' '}
                   <NumberFormat
-                    value={event.amount / 1000000}
+                    value={+event.event.event_data.amount / 1000000}
                     displayType={'text'}
                     thousandSeparator={true}
                     prefix={'Lib: '}
@@ -175,16 +178,17 @@ const EventsList = () => {
               </div>
               <div className='event-address'>
                 <span style={{ fontWeight: 'bold' }}>
-                  {event.event_type === 'sent' ? 'To' : 'From'}:
+                  {event.event.event_data.event_type === 'sent' ? 'To' : 'From'}
+                  :
                 </span>{' '}
-                {event.event_type === 'sent'
-                  ? event.toAccount
-                  : event.fromAccount}
+                {event.event.event_data.address}
               </div>
             </CardDetail>
           </Card>
           // </Waypoint>
         ))}
+
+      {/* <div ref={setObservedEl}>Loading more...</div> */}
     </Div>
   )
 }
