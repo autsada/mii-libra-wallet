@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { format } from 'date-fns'
 // import { Waypoint } from 'react-waypoint'
 import NumberFormat from 'react-number-format'
@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import styled from 'styled-components'
 
 import Loader from './Loader'
-import { useQueryEvents } from './../hooks'
+import { useQueryEvents, QueryContext } from './../hooks'
 
 const useStyles = makeStyles({
   card: {
@@ -79,9 +79,12 @@ const CardDetail = styled(CardContent)`
   }
 `
 
-const EventsList = ({ address }) => {
+const EventsList = () => {
   const classes = useStyles()
-  const { events, queryEventsLoading } = useQueryEvents(address)
+  const { accountState } = useContext(QueryContext)
+  const { events, queryEventsLoading } = useQueryEvents(
+    accountState && accountState.address
+  )
 
   // function loadMoreEvents(index) {
   //   if (displayEvents) {

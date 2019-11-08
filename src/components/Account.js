@@ -1,9 +1,9 @@
 import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import QRCode from 'qrcode.react'
-import NumberFormat from 'react-number-format'
 
-import { QueryContext, useMintCoins } from '../hooks'
+import { QueryContext, useCreateAccount, useQueryState } from '../hooks'
+import Balance from './Balance'
 import Loader from './Loader'
 
 const AccountDiv = styled.div`
@@ -37,50 +37,67 @@ const AccountDiv = styled.div`
   }
 `
 
-const Account = ({ checkState }) => {
+const Account = () => {
   const { accountState } = useContext(QueryContext)
-  const { mintCoin, loading, error } = useMintCoins(accountState)
+  const { setCheckState } = useQueryState(accountState)
+  const {
+    createAccount,
+    createAccountLoading,
+    createAccountError
+  } = useCreateAccount()
 
   useEffect(() => {
-    if (checkState) {
-      if (
-        accountState &&
-        accountState.address &&
-        (!accountState.balance || +accountState.balance < 50)
-      ) {
-        mintCoin()
+    localStorage.removeItem('Events')
+    if (
+      !accountState ||
+      (accountState && (!accountState.address || !accountState.secretKey))
+    ) {
+      const createUser = async () => {
+        try {
+          const res = await createAccount()
+
+          if (res) {
+            if (res.data.createAccount.address) {
+              setCheckState(true)
+            }
+          }
+        } catch (err) {
+          console.log(err)
+        }
       }
+      createUser()
     }
-  }, [accountState, checkState, mintCoin])
+  }, [])
 
   return (
     <AccountDiv>
-      {(!accountState || !accountState.address || loading) && <Loader />}
+      {(!accountState ||
+        (accountState && !accountState.address) ||
+        createAccountLoading) && <Loader />}
 
-      {error && <p>Ooobs, something went wrong in minting coins.</p>}
+      {createAccountError && (
+        <p>Ooobs, something went wrong in creating account.</p>
+      )}
 
-      {accountState && accountState.address && !loading && !error && (
-        <>
+      {accountState &&
+        accountState.address &&
+        !createAccountLoading &&
+        !createAccountError && (
           <div className='address'>
             <p>{accountState && accountState.address}</p>
           </div>
+        )}
 
-          <div className='balance'>
-            <NumberFormat
-              value={accountState.balance / 1000000}
-              displayType={'text'}
-              thousandSeparator={true}
-              prefix={'Lib: '}
-              renderText={value => <span>{value}</span>}
-            />
-            <img src='/assets/libra-coin.png' width='30' alt='libra' />
-          </div>
+      {accountState && accountState.address && <Balance />}
 
+      {accountState &&
+        accountState.address &&
+        !createAccountLoading &&
+        !createAccountError && (
           <div className='qr-code'>
             <QRCode value={accountState && accountState.address} size={150} />
           </div>
-        </>
-      )}
+        )}
     </AccountDiv>
   )
 }

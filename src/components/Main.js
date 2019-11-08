@@ -1,14 +1,8 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 
-import {
-  ActivityContext,
-  QueryContext,
-  useCreateAccount,
-  useQueryState
-} from '../hooks'
+import { ActivityContext } from '../hooks'
 import Head from './Head'
-import Loader from './Loader'
 import EventsList from './EventsList'
 import ReceivedCoinsMessage from './ReceivedCoinsMessage'
 import Account from './Account'
@@ -109,44 +103,12 @@ const Main = () => {
   const { startSendCoins, showEvents, toggleShowEvents } = useContext(
     ActivityContext
   )
-  const { accountState } = useContext(QueryContext)
-  const {
-    createAccount,
-    createAccountLoading,
-    createAccountError
-  } = useCreateAccount()
-
-  const { checkState, setCheckState } = useQueryState(accountState)
-
-  useEffect(() => {
-    localStorage.removeItem('Events')
-    if (
-      !accountState ||
-      (accountState && (!accountState.address || !accountState.secretKey))
-    ) {
-      const createUser = async () => {
-        try {
-          createAccount().then(() => setCheckState(true))
-        } catch (err) {
-          console.log(err)
-        }
-      }
-      createUser()
-    }
-  }, [accountState])
 
   return (
     <MainDiv>
       <Head />
       <div className='account'>
-        {!accountState ||
-          (!accountState.address && createAccountLoading && <Loader />)}
-
-        {createAccountError && (
-          <p>Ooobs, something went wrong in creating account.</p>
-        )}
-
-        <Account checkState={checkState} />
+        <Account />
       </div>
       <div className='action-button' onClick={startSendCoins}>
         <div className='button-text'>Send Coins</div>
@@ -156,11 +118,9 @@ const Main = () => {
         <div className='button-text'>Activities</div>
       </div>
 
-      {showEvents && (
-        <EventsList address={(accountState && accountState.address) || ''} />
-      )}
+      {showEvents && <EventsList />}
 
-      {accountState && <ReceivedCoinsMessage />}
+      <ReceivedCoinsMessage />
     </MainDiv>
   )
 }
