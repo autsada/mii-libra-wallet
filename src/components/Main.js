@@ -60,7 +60,7 @@ const MainDiv = styled.div`
     width: 80%;
     height: 5rem;
     margin: 0 auto;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     border-radius: 4px;
     cursor: pointer;
     background: ${props => props.theme.libraBlue};
@@ -72,7 +72,7 @@ const MainDiv = styled.div`
     }
 
     @media ${props => props.theme.sm} {
-      height: 4rem;
+      height: 5rem;
       width: 80%;
     }
 
