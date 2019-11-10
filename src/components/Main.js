@@ -72,7 +72,7 @@ const MainDiv = styled.div`
     }
 
     @media ${props => props.theme.sm} {
-      height: 5rem;
+      height: 6rem;
       width: 80%;
     }
 
