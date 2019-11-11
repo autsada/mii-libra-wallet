@@ -26,7 +26,6 @@ const Balance = () => {
         accountState.address &&
         (!accountState.balance || +accountState.balance < 50)
       ) {
-        console.log('Mint coin 2')
         mintCoin()
       }
     }

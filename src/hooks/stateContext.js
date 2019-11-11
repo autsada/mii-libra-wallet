@@ -4,7 +4,7 @@ import { getLocalAccount } from '../helpers/getLocalStorageData'
 
 export const QueryContext = createContext()
 
-export const QueryProvider = ({ children }) => {
+export const StateProvider = ({ children }) => {
   const [accountState, setAccountState] = useState(getLocalAccount())
 
   const setState = state => {

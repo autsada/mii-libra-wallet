@@ -6,7 +6,6 @@ import { QUERY_RECEIVED_EVENTS, QUERY_SENT_EVENTS } from '../apolloClient/query'
 export const useQueryEvents = address => {
   const [events, setEvents] = useState([])
   const [queryEventsLoading, setQueryEventsLoading] = useState(false)
-  // const [displayedEvents, setDisplayedEvents] = useState(events.slice(0, 3))
   const [isNoEvents, setIsNoEvents] = useState(false)
 
   const queryReceived = useQuery(QUERY_RECEIVED_EVENTS, {
@@ -43,22 +42,6 @@ export const useQueryEvents = address => {
       setQueryEventsLoading(false)
     }
   }, [querySent, queryReceived])
-
-  // const loadMore = () => {
-  //   setTimeout(() => {
-  //     setDisplayedEvents([
-  //       ...displayedEvents,
-  //       ...events.slice(
-  //         displayedEvents.length,
-  //         events.length - displayedEvents.length > 3
-  //           ? displayedEvents.length + 3
-  //           : events.length
-  //       )
-  //     ])
-  //   }, 500)
-  // }
-
-  console.log(events)
 
   return { events, queryEventsLoading, isNoEvents }
 }

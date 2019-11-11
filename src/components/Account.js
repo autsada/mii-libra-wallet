@@ -47,7 +47,7 @@ const Account = () => {
   } = useCreateAccount()
 
   useEffect(() => {
-    localStorage.removeItem('Events')
+    // localStorage.removeItem('Events')
     if (
       !accountState ||
       (accountState && (!accountState.address || !accountState.secretKey))

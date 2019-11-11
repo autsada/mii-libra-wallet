@@ -5,7 +5,7 @@ import {
   RouterProvider,
   ManualTransferProvider,
   QrCodeProvider,
-  QueryProvider
+  StateProvider
 } from './index'
 
 const ProviderComposer = ({ contexts, children }) => {
@@ -24,7 +24,7 @@ const ContextProvider = ({ children }) => (
       <ManualTransferProvider />,
       <ActivityProvider />,
       <QrCodeProvider />,
-      <QueryProvider />,
+      <StateProvider />,
       <RouterProvider />
     ]}
   >

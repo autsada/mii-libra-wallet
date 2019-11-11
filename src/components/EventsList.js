@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { format } from 'date-fns'
 // import { Waypoint } from 'react-waypoint'
 import NumberFormat from 'react-number-format'
@@ -7,7 +7,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import styled from 'styled-components'
 
 import { useQueryEvents, QueryContext } from './../hooks'
-import Loader from './Loader'
 
 const useStyles = makeStyles({
   card: {
@@ -64,7 +63,7 @@ const Div = styled.div`
     justify-content: center;
     align-items: center;
     font-size: 1rem;
-    margin-top: 2rem;
+    margin: 2rem 0;
   }
 `
 
@@ -101,41 +100,62 @@ const EventsList = () => {
   const { events, queryEventsLoading, isNoEvents } = useQueryEvents(
     accountState && accountState.address
   )
-  // const [observedEl, setObservedEl] = useState(null)
+  const [displayedEvents, setDisplayedEvents] = useState(events.slice(0, 3))
+  const [observedEl, setObservedEl] = useState(null)
 
-  // const observer = new IntersectionObserver(
-  //   items => {
-  //     if (items[0].isIntersecting) {
-  //       // loadmore if more events
-  //       loadMore()
-  //     }
-  //   },
-  //   { threshold: 1 }
-  // )
+  useEffect(() => {
+    setDisplayedEvents(events.slice(0, 3))
+  }, [events])
 
-  // useEffect(() => {
-  //   if (observedEl) {
-  //     observer.observe(observedEl)
-  //   }
+  const loadMore = () => {
+    setTimeout(() => {
+      setDisplayedEvents([
+        ...displayedEvents,
+        ...events.slice(
+          displayedEvents.length,
+          events.length - displayedEvents.length > 3
+            ? displayedEvents.length + 3
+            : events.length
+        )
+      ])
+    }, 500)
+  }
 
-  //   return () => {
-  //     if (observedEl) {
-  //       observer.unobserve(observedEl)
-  //     }
-  //   }
-  // }, [observedEl, observer])
+  const observer = new IntersectionObserver(
+    items => {
+      if (items[0].isIntersecting) {
+        // loadmore if more events
+        if (events.length > displayedEvents.length) {
+          loadMore()
+        }
+      }
+    },
+    { threshold: 1 }
+  )
+
+  useEffect(() => {
+    if (observedEl) {
+      observer.observe(observedEl)
+    }
+
+    return () => {
+      if (observedEl) {
+        observer.unobserve(observedEl)
+      }
+    }
+  }, [observedEl, observer, events])
 
   return (
     <Div>
-      {!isNoEvents && queryEventsLoading && <Loader />}
+      {/* {!isNoEvents && queryEventsLoading && <Loader />} */}
 
       {isNoEvents && !queryEventsLoading && (
         <p className='no-activity'>No activity</p>
       )}
 
-      {events &&
-        events.length > 0 &&
-        events.map((event, i) => (
+      {displayedEvents &&
+        displayedEvents.length > 0 &&
+        displayedEvents.map((event, i) => (
           // <Waypoint
           //   onEnter={() => loadMoreEvents(i)}
           //   onLeave={onLeaveHandler}
@@ -210,11 +230,11 @@ const EventsList = () => {
           // </Waypoint>
         ))}
 
-      {/* {(events.length > displayedEvents.length || queryEventsLoading) && (
+      {(events.length > displayedEvents.length || queryEventsLoading) && (
         <div ref={setObservedEl} className='load-more'>
           Loading activities...
         </div>
-      )} */}
+      )}
     </Div>
   )
 }

@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react'
 import { useApolloClient, useMutation } from '@apollo/react-hooks'
 
 import { CREATE_ACCOUNT } from '../apolloClient/mutation'
-import { QueryContext } from './queryContext'
+import { QueryContext } from './stateContext'
 import { saveLocalAccount } from '../helpers/getLocalStorageData'
 
 export const useCreateAccount = () => {
