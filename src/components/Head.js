@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 
 const Div = styled.div`
   width: 100%;
@@ -8,7 +8,6 @@ const Div = styled.div`
   margin-bottom: 2rem;
 
   @media ${props => props.theme.sm} {
-    margin-bottom: 3rem;
     width: 80%;
   }
 
@@ -29,14 +28,14 @@ const Div = styled.div`
       margin-top: 1rem;
     }
   }
-`
+`;
 
 function Head() {
   return (
     <Div>
-      <h2 className='header-text'>My Wallet</h2>
+      <h2 className="header-text">My Wallet</h2>
     </Div>
-  )
+  );
 }
 
-export default Head
+export default Head;
