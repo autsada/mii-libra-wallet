@@ -114,18 +114,15 @@ const Main = () => {
       </div>
       <div className="action-button" onClick={startSendCoins}>
         <div className="button-text">Send Coins</div>
-        <FontAwesomeIcon icon="paper-plane" style={{ marginRight: "1.5rem" }} />
+        <FontAwesomeIcon icon="paper-plane" style={{ marginRight: "2rem" }} />
       </div>
 
       <div className="action-button" onClick={toggleShowEvents}>
         <div className="button-text">Activities</div>
         {showEvents ? (
-          <FontAwesomeIcon
-            icon="angle-down"
-            style={{ marginRight: "1.5rem" }}
-          />
+          <FontAwesomeIcon icon="angle-down" style={{ marginRight: "2rem" }} />
         ) : (
-          <FontAwesomeIcon icon="angle-up" style={{ marginRight: "1.5rem" }} />
+          <FontAwesomeIcon icon="angle-up" style={{ marginRight: "2rem" }} />
         )}
       </div>
 
