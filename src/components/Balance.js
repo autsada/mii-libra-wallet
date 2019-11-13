@@ -39,6 +39,7 @@ const Balance = () => {
 
       {!error && !loading && (
         <>
+          <img src="/assets/libra-coin.png" width="30" alt="libra" />
           <NumberFormat
             value={accountState.balance / 1000000}
             displayType={"text"}
@@ -46,7 +47,6 @@ const Balance = () => {
             // prefix={'Lib: '}
             renderText={value => <span>{value}</span>}
           />
-          <img src="/assets/libra-coin.png" width="30" alt="libra" />
         </>
       )}
     </BalanceDiv>

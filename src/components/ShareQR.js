@@ -106,8 +106,6 @@ const ShareQR = () => {
 
   const notyf = new Notyf();
 
-  console.log(history);
-
   return (
     <MainDiv>
       <div className="header">
