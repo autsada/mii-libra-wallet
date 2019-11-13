@@ -1,4 +1,9 @@
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFacebookF, faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faCopy,
+  faAngleDown,
+  faAngleUp,
+  faPaperPlane
+} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faFacebookF, faGoogle)
+library.add(faCopy, faPaperPlane, faAngleDown, faAngleUp);

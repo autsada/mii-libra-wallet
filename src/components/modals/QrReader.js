@@ -1,10 +1,10 @@
-import React, { useContext } from 'react'
-import { Button } from '@material-ui/core'
-import QrReader from 'react-qr-reader'
-import OutSideClick from 'react-outside-click-handler'
-import styled from 'styled-components'
+import React, { useContext } from "react";
+import { Button } from "@material-ui/core";
+import QrReader from "react-qr-reader";
+import OutSideClick from "react-outside-click-handler";
+import styled from "styled-components";
 
-import { ActivityContext, QrCodeContext } from '../../hooks'
+import { ActivityContext, QrCodeContext } from "../../hooks";
 
 const Div = styled.div`
   width: 50%;
@@ -115,38 +115,38 @@ const Div = styled.div`
     margin: 0;
     padding: 0;
   }
-`
+`;
 
 const QR = () => {
-  const { closeScanQR, manual } = useContext(ActivityContext)
-  const { handleScan, handleError } = useContext(QrCodeContext)
+  const { closeScanQR, manual } = useContext(ActivityContext);
+  const { handleScan, handleError } = useContext(QrCodeContext);
 
   return (
     <OutSideClick onOutsideClick={closeScanQR}>
       <Div>
-        <div className='close'>
-          <div className='close-left' onClick={closeScanQR}>
+        <div className="close">
+          <div className="close-left" onClick={closeScanQR}>
             &times;
           </div>
         </div>
 
-        <div className='qr-code-reader'>
+        <div className="qr-code-reader">
           <QrReader
             delay={200}
             onError={handleError}
             onScan={handleScan}
-            className='qr-reader'
+            className="qr-reader"
           />
         </div>
 
-        <div className='to-manual'>
-          <Button className='switch-mode' onClick={manual}>
+        <div className="to-manual">
+          <Button className="switch-mode" onClick={manual}>
             Switch to Manual
           </Button>
         </div>
       </Div>
     </OutSideClick>
-  )
-}
+  );
+};
 
-export default QR
+export default QR;

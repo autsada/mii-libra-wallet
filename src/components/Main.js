@@ -1,11 +1,12 @@
-import React, { useContext } from 'react'
-import styled from 'styled-components'
+import React, { useContext } from "react";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { ActivityContext } from '../hooks'
-import Head from './Head'
-import EventsList from './EventsList'
-import ReceivedCoinsMessage from './ReceivedCoinsMessage'
-import Account from './Account'
+import { ActivityContext } from "../hooks";
+import Head from "./Head";
+import EventsList from "./EventsList";
+import ReceivedCoinsMessage from "./ReceivedCoinsMessage";
+import Account from "./Account";
 
 const MainDiv = styled.div`
   width: 50%;
@@ -43,7 +44,7 @@ const MainDiv = styled.div`
     width: 100%;
     margin: 0 auto;
     text-align: center;
-    /* margin-bottom: 2rem; */
+    margin-bottom: 3rem;
 
     @media ${props => props.theme.sm} {
       margin-bottom: 3rem;
@@ -53,7 +54,7 @@ const MainDiv = styled.div`
 
   .action-button {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     font-size: 2rem;
     color: white;
@@ -77,52 +78,62 @@ const MainDiv = styled.div`
     }
 
     .button-text {
+      width: 85%;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 2rem;
+      font-size: 1.6rem;
       color: white;
       border-radius: 0 4px 4px 0;
       transition: background-color ${props => props.theme.transitionDuration}
         ease-in;
 
       @media ${props => props.theme.md} {
-        font-size: 1.8rem;
+        /* font-size: 1.6rem; */
       }
 
       @media ${props => props.theme.sm} {
-        font-size: 1.4rem;
+        /* font-size: 1.4rem; */
       }
     }
   }
-`
+`;
 
 // const Account = React.lazy(() => import('./Account'))
 
 const Main = () => {
   const { startSendCoins, showEvents, toggleShowEvents } = useContext(
     ActivityContext
-  )
+  );
 
   return (
     <MainDiv>
       <Head />
-      <div className='account'>
+      <div className="account">
         <Account />
       </div>
-      <div className='action-button' onClick={startSendCoins}>
-        <div className='button-text'>Send Coins</div>
+      <div className="action-button" onClick={startSendCoins}>
+        <div className="button-text">Send Coins</div>
+        <FontAwesomeIcon icon="paper-plane" style={{ marginRight: "1.5rem" }} />
       </div>
 
-      <div className='action-button' onClick={toggleShowEvents}>
-        <div className='button-text'>Activities</div>
+      <div className="action-button" onClick={toggleShowEvents}>
+        <div className="button-text">Activities</div>
+        {showEvents ? (
+          <FontAwesomeIcon
+            icon="angle-down"
+            style={{ marginRight: "1.5rem" }}
+          />
+        ) : (
+          <FontAwesomeIcon icon="angle-up" style={{ marginRight: "1.5rem" }} />
+        )}
       </div>
 
       {showEvents && <EventsList />}
 
       <ReceivedCoinsMessage />
     </MainDiv>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;

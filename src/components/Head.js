@@ -5,7 +5,7 @@ const Div = styled.div`
   width: 100%;
   margin: 2rem auto;
   text-align: center;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 
   @media ${props => props.theme.sm} {
     width: 80%;
