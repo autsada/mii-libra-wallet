@@ -6,7 +6,7 @@ import { QueryContext, useMintCoins, useQueryState } from "../hooks";
 import Loader from "./Loader";
 
 const BalanceDiv = styled.div`
-  font-size: 2.5rem;
+  font-size: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;

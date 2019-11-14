@@ -1,17 +1,31 @@
-import React, { useContext } from 'react'
+import React, { useContext } from "react";
+import { useTransition, animated } from "react-spring";
 
-import { ActivityContext } from '../hooks/activityContext'
-import Main from '../components/Main'
-import Modal from './../components/modals/Modal'
+import { ActivityContext } from "../hooks/activityContext";
+import Main from "../components/Main";
+import Modal from "./../components/modals/Modal";
 
 const MainPage = () => {
-  const { openModal } = useContext(ActivityContext)
+  const { openModal } = useContext(ActivityContext);
+  const transitions = useTransition(openModal, null, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opactiy: 0 }
+  });
+
   return (
     <>
-      {openModal && <Modal />}
+      {transitions.map(
+        ({ item, key, props }) =>
+          item && (
+            <animated.div key={key} style={props}>
+              <Modal />
+            </animated.div>
+          )
+      )}
       <Main />
     </>
-  )
-}
+  );
+};
 
-export default MainPage
+export default MainPage;

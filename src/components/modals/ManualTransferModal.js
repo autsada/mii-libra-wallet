@@ -1,8 +1,8 @@
-import React, { useContext } from 'react'
-import styled from 'styled-components'
-import { TextField, Button } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import OutSideClick from 'react-outside-click-handler'
+import React, { useContext } from "react";
+import styled from "styled-components";
+import { TextField, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import OutSideClick from "react-outside-click-handler";
 
 import {
   ActivityContext,
@@ -10,30 +10,30 @@ import {
   ManualTransferContext,
   QrCodeContext,
   useTransferCoins
-} from '../../hooks'
-import Loader from '../Loader'
+} from "../../hooks";
+import Loader from "../Loader";
 
 const useStyles = makeStyles(theme => ({
   container: {
-    display: 'flex',
-    flexWrap: 'wrap'
+    display: "flex",
+    flexWrap: "wrap"
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    marginBottom: '100px'
+    marginBottom: "100px"
   },
   cssOutlinedInput: {
-    '&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline': {
+    "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
       borderColor: `${theme.teal}`,
-      borderWidth: '0.6px' //default
+      borderWidth: "0.6px" //default
     },
-    '&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline': {
-      borderWidth: '1px',
+    "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
+      borderWidth: "1px",
       borderColor: `${theme.teal}` //hovered
     },
-    '&$cssFocused $notchedOutline': {
-      borderWidth: '1px',
+    "&$cssFocused $notchedOutline": {
+      borderWidth: "1px",
       borderColor: `${theme.teal}` //focused
     }
   },
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   cssFocused: {},
   error: {},
   disabled: {}
-}))
+}));
 
 const Div = styled.div`
   width: 50%;
@@ -68,9 +68,9 @@ const Div = styled.div`
   }
 
   @media ${props => props.theme.sm} {
-    top: 50%;
+    /* top: 40%; */
     width: 100%;
-    height: 100%;
+    height: 60%;
   }
 
   .close {
@@ -104,7 +104,6 @@ const Div = styled.div`
       }
 
       @media ${props => props.theme.sm} {
-        font-size: 2rem;
         right: 0.5rem;
       }
     }
@@ -220,35 +219,35 @@ const Div = styled.div`
       }
     }
   }
-`
+`;
 
 const ManualTransfer = () => {
-  const classes = useStyles()
-  const { cancelManual, scanQR } = useContext(ActivityContext)
-  const { accountState } = useContext(QueryContext)
-  const { qrValue } = useContext(QrCodeContext)
+  const classes = useStyles();
+  const { cancelManual, scanQR } = useContext(ActivityContext);
+  const { accountState } = useContext(QueryContext);
+  const { qrValue } = useContext(QrCodeContext);
   const {
     transferArgs: { receiver, amount },
     handleChange,
     handleBlur,
     receiverError,
     amountError
-  } = useContext(ManualTransferContext)
+  } = useContext(ManualTransferContext);
 
   const { transferMoney, loading, error } = useTransferCoins({
     accountState,
     receiver: receiver || qrValue,
     transferAmount: amount
-  })
+  });
 
   const handleSubmit = async e => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      await transferMoney()
+      await transferMoney();
     } catch (err) {
-      cancelManual()
+      cancelManual();
     }
-  }
+  };
 
   return (
     <>
@@ -256,9 +255,9 @@ const ManualTransfer = () => {
         <OutSideClick onOutsideClick={cancelManual}>
           <Div>
             {loading && (
-              <div className='transfering'>
+              <div className="transfering">
                 <Loader />
-                <div className='transfer-message'>
+                <div className="transfer-message">
                   Transfering coins, please wait.
                 </div>
               </div>
@@ -269,31 +268,31 @@ const ManualTransfer = () => {
             )}
 
             {!loading && !error && (
-              <div className='close'>
-                <div className='close-left' onClick={cancelManual}>
+              <div className="close">
+                <div className="close-left" onClick={cancelManual}>
                   &times;
                 </div>
               </div>
             )}
 
             {!loading && !error && (
-              <div className='form'>
+              <div className="form">
                 <form onSubmit={handleSubmit}>
                   <div>
                     <TextField
-                      type='text'
-                      id='receiver'
-                      name='receiver'
-                      label='Receiver Address'
-                      placeholder='Receiver Address'
-                      className='input-field'
+                      type="text"
+                      id="receiver"
+                      name="receiver"
+                      label="Receiver Address"
+                      placeholder="Receiver Address"
+                      className="input-field"
                       value={receiver || qrValue}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       required={true}
                       error={receiverError}
                       fullWidth
-                      variant='outlined'
+                      variant="outlined"
                       inputProps={{ maxLength: 64 }}
                       InputProps={{
                         classes: {
@@ -309,35 +308,35 @@ const ManualTransfer = () => {
 
                     <>
                       {
-                        <div className='error'>
+                        <div className="error">
                           {!receiver && !qrValue ? (
-                            <p className='error-text'>
+                            <p className="error-text">
                               Receiver address is required
                             </p>
                           ) : (receiver && receiver.length < 64) ||
                             (qrValue && qrValue.length < 64) ? (
-                            <p className='error-text'>Address is too short</p>
+                            <p className="error-text">Address is too short</p>
                           ) : (receiver && receiver.length > 64) ||
                             (qrValue && qrValue.length > 64) ? (
-                            <p className='error-text'>Address is too long</p>
+                            <p className="error-text">Address is too long</p>
                           ) : null}
                         </div>
                       }
                     </>
 
                     <TextField
-                      type='number'
-                      id='amount'
-                      name='amount'
-                      label='Transfer Amount'
-                      placeholder='Amount you want to transfer'
-                      value={!amount ? '' : amount}
+                      type="number"
+                      id="amount"
+                      name="amount"
+                      label="Transfer Amount"
+                      placeholder="Amount you want to transfer"
+                      value={!amount ? "" : amount}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       required={true}
                       error={amountError}
                       fullWidth
-                      variant='outlined'
+                      variant="outlined"
                       InputProps={{
                         classes: {
                           notchedOutline: classes.notchedOutline,
@@ -353,20 +352,20 @@ const ManualTransfer = () => {
 
                   <>
                     {
-                      <div className='error'>
+                      <div className="error">
                         {!amount ? (
-                          <p className='error-text'>Amount is required</p>
+                          <p className="error-text">Amount is required</p>
                         ) : null}
                       </div>
                     }
                   </>
 
-                  <div className='submit-button-container'>
-                    <Button className='to-qr' onClick={scanQR}>
+                  <div className="submit-button-container">
+                    <Button className="to-qr" onClick={scanQR}>
                       Switch to Scan QR
                     </Button>
                     <Button
-                      type='submit'
+                      type="submit"
                       style={{
                         cursor:
                           ((!receiver ||
@@ -376,8 +375,8 @@ const ManualTransfer = () => {
                           !amount ||
                           loading ||
                           error
-                            ? 'not-allowed'
-                            : 'pointer'
+                            ? "not-allowed"
+                            : "pointer"
                       }}
                     >
                       Submit
@@ -390,7 +389,7 @@ const ManualTransfer = () => {
         </OutSideClick>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ManualTransfer
+export default ManualTransfer;

@@ -21,12 +21,14 @@ const MainDiv = styled.div`
   /* position: relative; */
 
   @media ${props => props.theme.lg} {
-    width: 70%;
+    width: 65%;
+    height: auto;
     margin-top: 2rem;
   }
 
   @media ${props => props.theme.md} {
-    width: 70%;
+    width: 80%;
+    height: auto;
     margin-top: 2rem;
   }
 
@@ -109,9 +111,11 @@ const Main = () => {
   return (
     <MainDiv>
       <Head />
+
       <div className="account">
         <Account />
       </div>
+
       <div className="action-button" onClick={startSendCoins}>
         <div className="button-text">Send Coins</div>
         <FontAwesomeIcon icon="paper-plane" style={{ marginRight: "2rem" }} />
@@ -119,6 +123,7 @@ const Main = () => {
 
       <div className="action-button" onClick={toggleShowEvents}>
         <div className="button-text">Activities</div>
+
         {showEvents ? (
           <FontAwesomeIcon icon="angle-down" style={{ marginRight: "2rem" }} />
         ) : (
