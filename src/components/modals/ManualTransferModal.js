@@ -330,6 +330,7 @@ const ManualTransfer = () => {
                       name="amount"
                       label="Transfer Amount"
                       placeholder="Amount you want to transfer"
+                      className="input-field"
                       value={!amount ? "" : amount}
                       onChange={handleChange}
                       onBlur={handleBlur}

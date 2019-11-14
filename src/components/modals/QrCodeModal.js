@@ -27,7 +27,7 @@ const Div = styled.div`
   @media ${props => props.theme.md} {
     width: 55%;
     top: 40%;
-    height: 50%;
+    height: 55%;
   }
 
   @media ${props => props.theme.sm} {
