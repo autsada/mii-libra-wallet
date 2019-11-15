@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useTransition, animated } from "react-spring";
 
-import { ActivityContext } from "../hooks/activityContext";
+import { ActivityContext } from "../hooks";
 import Main from "../components/Main";
 import Modal from "./../components/modals/Modal";
 

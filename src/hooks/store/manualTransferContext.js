@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react'
 
-import usePrevious from './usePrevious'
+import usePrevious from '../usePrevious'
 
 export const ManualTransferContext = createContext()
 

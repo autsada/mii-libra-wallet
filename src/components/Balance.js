@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from "react";
-import styled from "styled-components";
-import NumberFormat from "react-number-format";
+import React, { useContext, useEffect } from "react"
+import styled from "styled-components"
+import NumberFormat from "react-number-format"
 
-import { QueryContext, useMintCoins, useQueryState } from "../hooks";
-import Loader from "./Loader";
+import { QueryContext, useMintCoins, useQueryState } from "../hooks"
+import Loader from "./Loader"
 
 const BalanceDiv = styled.div`
   font-size: 3rem;
@@ -11,13 +11,13 @@ const BalanceDiv = styled.div`
   justify-content: center;
   align-items: center;
   color: ${props => props.theme.libraBlue};
-`;
+`
 
 const Balance = () => {
-  const { accountState } = useContext(QueryContext);
-  const { checkState } = useQueryState(accountState);
+  const { accountState } = useContext(QueryContext)
+  const { checkState } = useQueryState(accountState)
 
-  const { mintCoin, loading, error } = useMintCoins(accountState);
+  const { mintCoin, loading, error } = useMintCoins(accountState)
 
   useEffect(() => {
     if (checkState) {
@@ -26,10 +26,10 @@ const Balance = () => {
         accountState.address &&
         (!accountState.balance || +accountState.balance < 50)
       ) {
-        mintCoin();
+        mintCoin()
       }
     }
-  }, [accountState, checkState, mintCoin]);
+  }, [accountState, checkState, mintCoin])
 
   return (
     <BalanceDiv>
@@ -50,7 +50,7 @@ const Balance = () => {
         </>
       )}
     </BalanceDiv>
-  );
-};
+  )
+}
 
-export default Balance;
+export default Balance

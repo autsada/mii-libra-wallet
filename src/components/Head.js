@@ -33,7 +33,7 @@ const Div = styled.div`
 function Head() {
   return (
     <Div>
-      <h2 className="header-text">My Wallet</h2>
+      <h2 className="header-text">Mii Wallet</h2>
     </Div>
   );
 }

@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react'
 
-import { getLocalAccount } from '../helpers/getLocalStorageData'
+import { getLocalAccount } from '../../helpers/getLocalStorageData'
 
 export const QueryContext = createContext()
 

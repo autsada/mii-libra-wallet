@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
-import { Button } from '@material-ui/core'
-import styled from 'styled-components'
-import OutSideClick from 'react-outside-click-handler'
+import React, { useContext } from "react";
+import { Button } from "@material-ui/core";
+import styled from "styled-components";
+import OutSideClick from "react-outside-click-handler";
 
-import { ActivityContext } from '../../hooks/activityContext'
+import { ActivityContext } from "../../hooks";
 
 const Div = styled.div`
   width: 30%;
@@ -91,29 +91,29 @@ const Div = styled.div`
     width: 100%;
     height: 45%;
   }
-`
+`;
 
 const TransferMethodModal = () => {
-  const { manual, scanQR, cancelSendCoins } = useContext(ActivityContext)
+  const { manual, scanQR, cancelSendCoins } = useContext(ActivityContext);
 
   return (
     <OutSideClick onOutsideClick={cancelSendCoins}>
       <Div>
-        <div className='close'>
-          <div className='close-left' onClick={cancelSendCoins}>
+        <div className="close">
+          <div className="close-left" onClick={cancelSendCoins}>
             &times;
           </div>
         </div>
-        <div className='head'>
+        <div className="head">
           <p>Choose Transfering Method</p>
         </div>
-        <div className='btn-method'>
+        <div className="btn-method">
           <Button onClick={manual}>Manual</Button>
           <Button onClick={scanQR}>Scan QR</Button>
         </div>
       </Div>
     </OutSideClick>
-  )
-}
+  );
+};
 
-export default TransferMethodModal
+export default TransferMethodModal;

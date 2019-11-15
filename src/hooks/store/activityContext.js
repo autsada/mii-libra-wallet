@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext } from 'react'
 
-import { ManualTransferContext } from './index'
+import { ManualTransferContext } from '../index'
 
 export const ActivityContext = createContext()
 

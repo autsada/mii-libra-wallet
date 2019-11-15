@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useContext } from "react"
+import styled from "styled-components"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-import { ActivityContext } from "../hooks";
-import Head from "./Head";
-import EventsList from "./EventsList";
-import ReceivedCoinsMessage from "./ReceivedCoinsMessage";
-import Account from "./Account";
+import { ActivityContext } from "../hooks"
+import Head from "./Head"
+import EventsList from "./EventsList"
+import ReceivedCoinsMessage from "./ReceivedCoinsMessage"
+import Account from "./Account"
 
 const MainDiv = styled.div`
   width: 50%;
-  height: 100%;
+  height: auto;
   background: ${props => props.theme.white};
   margin: 0 auto;
   color: ${props => props.theme.black};
@@ -86,6 +86,7 @@ const MainDiv = styled.div`
       align-items: center;
       font-size: 1.6rem;
       color: white;
+      margin-right: -20%;
       border-radius: 0 4px 4px 0;
       transition: background-color ${props => props.theme.transitionDuration}
         ease-in;
@@ -98,15 +99,19 @@ const MainDiv = styled.div`
         /* font-size: 1.4rem; */
       }
     }
+
+    .svg-inline--fa {
+      font-size: 1.4rem;
+    }
   }
-`;
+`
 
 // const Account = React.lazy(() => import('./Account'))
 
 const Main = () => {
   const { startSendCoins, showEvents, toggleShowEvents } = useContext(
     ActivityContext
-  );
+  )
 
   return (
     <MainDiv>
@@ -117,17 +122,17 @@ const Main = () => {
       </div>
 
       <div className="action-button" onClick={startSendCoins}>
-        <div className="button-text">Send Coins</div>
-        <FontAwesomeIcon icon="paper-plane" style={{ marginRight: "2rem" }} />
+        <div className="button-text">Transfer</div>
+        <FontAwesomeIcon icon="paper-plane" />
       </div>
 
       <div className="action-button" onClick={toggleShowEvents}>
         <div className="button-text">Activities</div>
 
         {showEvents ? (
-          <FontAwesomeIcon icon="angle-down" style={{ marginRight: "2rem" }} />
+          <FontAwesomeIcon icon="angle-down" />
         ) : (
-          <FontAwesomeIcon icon="angle-up" style={{ marginRight: "2rem" }} />
+          <FontAwesomeIcon icon="angle-up" />
         )}
       </div>
 
@@ -135,7 +140,7 @@ const Main = () => {
 
       <ReceivedCoinsMessage />
     </MainDiv>
-  );
-};
+  )
+}
 
-export default Main;
+export default Main

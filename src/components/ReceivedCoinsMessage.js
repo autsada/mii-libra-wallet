@@ -1,18 +1,18 @@
-import { useEffect, useContext } from 'react'
-import { useApolloClient, useSubscription } from '@apollo/react-hooks'
+import { useEffect, useContext } from "react";
+import { useApolloClient, useSubscription } from "@apollo/react-hooks";
 
-import { RECEIVED_COINS_NOTIFIER } from '../apolloClient/subscription'
-import { QueryContext } from '../hooks'
-import { saveLocalAccount } from '../helpers/getLocalStorageData'
+import { RECEIVED_COINS_NOTIFIER } from "../apolloClient/subscription";
+import { QueryContext } from "../hooks";
+import { saveLocalAccount } from "../helpers/getLocalStorageData";
 
 const ReceivedCoinsMessage = () => {
-  const { accountState, setState } = useContext(QueryContext)
+  const { accountState, setState } = useContext(QueryContext);
 
-  const client = useApolloClient()
+  const client = useApolloClient();
 
   const { data } = useSubscription(RECEIVED_COINS_NOTIFIER, {
     variables: { receiverAddress: accountState && accountState.address }
-  })
+  });
 
   useEffect(() => {
     if (
@@ -25,24 +25,24 @@ const ReceivedCoinsMessage = () => {
         transaction: {
           transaction: { amount }
         }
-      } = data.receivedCoins
+      } = data.receivedCoins;
 
       const updatedState = {
         ...accountState,
         balance: (+accountState.balance + +amount).toString()
-      }
+      };
 
-      saveLocalAccount(updatedState)
-      setState(updatedState)
+      saveLocalAccount(updatedState);
+      setState(updatedState);
       client.writeData({
         data: {
           user: updatedState
         }
-      })
+      });
     }
-  }, [data])
+  }, [data]);
 
-  return null
-}
+  return null;
+};
 
-export default ReceivedCoinsMessage
+export default ReceivedCoinsMessage;

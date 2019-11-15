@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import styled from "styled-components";
 import { useTransition, animated } from "react-spring";
 
-import { ActivityContext } from "../../hooks/activityContext";
+import { ActivityContext } from "../../hooks";
 import Backdrop from "../Backdrop";
 import TransferMethodModal from "./TransferMethodModal";
 import ManualTransferModal from "./ManualTransferModal";

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import styled from "styled-components";
 
-import { useQueryEvents, QueryContext } from "./../hooks";
+import { useQueryEvents, QueryContext } from "../hooks";
 
 const useStyles = makeStyles({
   card: {

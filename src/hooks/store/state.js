@@ -6,7 +6,7 @@ import {
   ManualTransferProvider,
   QrCodeProvider,
   StateProvider
-} from './index'
+} from '../index'
 
 const ProviderComposer = ({ contexts, children }) => {
   return contexts.reduceRight(

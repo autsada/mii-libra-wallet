@@ -1,16 +1,16 @@
-import React from "react";
-import { StylesProvider } from "@material-ui/styles";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import { ApolloProvider } from "@apollo/react-hooks";
-import { Route } from "react-router-dom";
+import React from "react"
+import { StylesProvider } from "@material-ui/styles"
+import { MuiThemeProvider } from "@material-ui/core/styles"
+import { ApolloProvider } from "@apollo/react-hooks"
+import { Route } from "react-router-dom"
 
-import client from "./apolloClient/client";
-import Page from "./components/Page";
-import { muiTheme } from "./cssTheme";
-import MainPage from "./pages/MainPage";
-import ShareQrPage from "./pages/ShareQrPage";
-import ContextProvider from "./hooks/state";
-import "./fontawesome/fontawesome";
+import ContextProvider from "./hooks/store/state"
+import "./fontawesome/fontawesome"
+import client from "./apolloClient/client"
+import Page from "./components/Page"
+import { muiTheme } from "./cssTheme"
+import MainPage from "./pages/MainPage"
+import ShareQrPage from "./pages/ShareQrPage"
 
 const App = () => {
   return (
@@ -30,7 +30,7 @@ const App = () => {
         </StylesProvider>
       </ContextProvider>
     </ApolloProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App

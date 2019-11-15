@@ -1,14 +1,14 @@
-import { useContext, useState, useEffect } from 'react'
-import { useApolloClient, useMutation } from '@apollo/react-hooks'
+import { useContext, useState, useEffect } from "react";
+import { useApolloClient, useMutation } from "@apollo/react-hooks";
 
-import { CREATE_ACCOUNT } from '../apolloClient/mutation'
-import { QueryContext } from './stateContext'
-import { saveLocalAccount } from '../helpers/getLocalStorageData'
+import { CREATE_ACCOUNT } from "../apolloClient/mutation";
+import { QueryContext } from "./index";
+import { saveLocalAccount } from "../helpers/getLocalStorageData";
 
 export const useCreateAccount = () => {
-  const { setState } = useContext(QueryContext)
-  const [createAccountLoading, setCreateAccountLoading] = useState(null)
-  const [createAccountError, setCreateAccountError] = useState(null)
+  const { setState } = useContext(QueryContext);
+  const [createAccountLoading, setCreateAccountLoading] = useState(null);
+  const [createAccountError, setCreateAccountError] = useState(null);
 
   // const client = useApolloClient()
 
@@ -19,16 +19,16 @@ export const useCreateAccount = () => {
           ...createAccount,
           balance: 0,
           sequenceNumber: undefined
-        }
+        };
 
         // Update context
-        setState(newAccount)
+        setState(newAccount);
 
         // Confirm that the state is check
         // setCheckState(true)
 
         // Update localStorage
-        saveLocalAccount(newAccount)
+        saveLocalAccount(newAccount);
 
         // Update cache
         // client.writeData({
@@ -38,27 +38,27 @@ export const useCreateAccount = () => {
         // })
       }
     }
-  })
+  });
 
   useEffect(() => {
     if (loading) {
-      setCreateAccountLoading(true)
+      setCreateAccountLoading(true);
     } else {
-      setCreateAccountLoading(false)
+      setCreateAccountLoading(false);
     }
-  }, [loading])
+  }, [loading]);
 
   useEffect(() => {
     if (error) {
-      setCreateAccountError(true)
+      setCreateAccountError(true);
     } else {
-      setCreateAccountError(false)
+      setCreateAccountError(false);
     }
-  }, [error])
+  }, [error]);
 
   return {
     createAccount,
     createAccountLoading,
     createAccountError
-  }
-}
+  };
+};

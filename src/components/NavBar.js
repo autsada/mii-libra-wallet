@@ -1,7 +1,8 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { AppBar, Toolbar } from '@material-ui/core'
-import styled from 'styled-components'
+import React from "react"
+import { Link } from "react-router-dom"
+import { makeStyles } from "@material-ui/core/styles"
+import { AppBar, Toolbar } from "@material-ui/core"
+import styled from "styled-components"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,7 +24,7 @@ const NavBarStyle = styled(AppBar)`
 
   .nav-bar {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     height: 100%;
 
@@ -31,6 +32,7 @@ const NavBarStyle = styled(AppBar)`
       margin: 0;
       padding: 0;
       display: flex;
+      width: 80%;
       justify-content: center;
       align-items: center;
 
@@ -61,6 +63,32 @@ const NavBarStyle = styled(AppBar)`
         font-size: 1.3rem;
       }
     }
+
+    /* .api {
+      width: 20%;
+
+      a {
+        color: white;
+        text-decoration: none;
+
+        .btn-api {
+          background: ${props => props.theme.lightBlue};
+
+          &:hover {
+            background: ${props => props.theme.darkBlue};
+          }
+
+          @media ${props => props.theme.lg} {
+            border: none;
+          }
+
+          @media ${props => props.theme.sm} {
+            font-size: 0.6rem;
+            margin-left: 3rem;
+          }
+        }
+      }
+    } */
   }
 
   @media ${props => props.theme.sm} {
@@ -85,11 +113,13 @@ const NavBar = () => {
   const classes = useStyles()
   return (
     <div className={classes.root}>
-      <NavBarStyle position='static'>
-        <Toolbar className='nav-bar'>
-          <div className='logo'>
-            <img src='/assets/libra.png' width='115' alt='LIBRA WALLET' />
-            <div className='testnet'>TestNet</div>
+      <NavBarStyle position="static">
+        <Toolbar className="nav-bar">
+          <div className="logo">
+            <Link to="/">
+              <img src="/assets/libra.png" width="115" alt="LIBRA WALLET" />
+            </Link>
+            <div className="testnet">TestNet</div>
           </div>
         </Toolbar>
       </NavBarStyle>
