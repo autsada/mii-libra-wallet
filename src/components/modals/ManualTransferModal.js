@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import { TextField, Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import OutSideClick from "react-outside-click-handler";
+import React, { useContext } from "react"
+import styled from "styled-components"
+import { TextField, Button } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+import OutSideClick from "react-outside-click-handler"
 
 import {
   ActivityContext,
@@ -10,8 +10,8 @@ import {
   ManualTransferContext,
   QrCodeContext,
   useTransferCoins
-} from "../../hooks";
-import Loader from "../Loader";
+} from "../../hooks"
+import Loader from "../Loader"
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   cssFocused: {},
   error: {},
   disabled: {}
-}));
+}))
 
 const Div = styled.div`
   width: 50%;
@@ -62,15 +62,15 @@ const Div = styled.div`
   }
 
   @media ${props => props.theme.md} {
-    top: 40%;
+    top: 30%;
     width: 50%;
     height: 35%;
   }
 
   @media ${props => props.theme.sm} {
-    /* top: 40%; */
+    top: 40%;
     width: 100%;
-    height: 60%;
+    height: 100%;
   }
 
   .close {
@@ -219,35 +219,35 @@ const Div = styled.div`
       }
     }
   }
-`;
+`
 
 const ManualTransfer = () => {
-  const classes = useStyles();
-  const { cancelManual, scanQR } = useContext(ActivityContext);
-  const { accountState } = useContext(QueryContext);
-  const { qrValue } = useContext(QrCodeContext);
+  const classes = useStyles()
+  const { cancelManual, scanQR } = useContext(ActivityContext)
+  const { accountState } = useContext(QueryContext)
+  const { qrValue } = useContext(QrCodeContext)
   const {
     transferArgs: { receiver, amount },
     handleChange,
     handleBlur,
     receiverError,
     amountError
-  } = useContext(ManualTransferContext);
+  } = useContext(ManualTransferContext)
 
   const { transferMoney, loading, error } = useTransferCoins({
     accountState,
     receiver: receiver || qrValue,
     transferAmount: amount
-  });
+  })
 
   const handleSubmit = async e => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      await transferMoney();
+      await transferMoney()
     } catch (err) {
-      cancelManual();
+      cancelManual()
     }
-  };
+  }
 
   return (
     <>
@@ -390,7 +390,7 @@ const ManualTransfer = () => {
         </OutSideClick>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ManualTransfer;
+export default ManualTransfer
