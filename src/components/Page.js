@@ -1,8 +1,8 @@
-import React from 'react'
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
+import React from "react"
+import styled, { ThemeProvider, createGlobalStyle } from "styled-components"
 
-import NavBar from './NavBar'
-import { muiTheme } from '../cssTheme'
+import NavBar from "./NavBar"
+import { muiTheme } from "../cssTheme"
 
 const GlobalStyle = createGlobalStyle`
    html {
@@ -32,7 +32,7 @@ const StyledPage = styled.div`
   }
 
   @media ${props => props.theme.md} {
-    height: 100vh;
+    height: auto;
     width: 100%;
   }
 
