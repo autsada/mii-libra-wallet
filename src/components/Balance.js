@@ -30,7 +30,7 @@ const Balance = () => {
         mintCoin()
       }
     }
-  }, [accountState, checkState, mintCoin])
+  }, [accountState])
 
   return (
     <BalanceDiv>

@@ -21,8 +21,6 @@ export const useCreateAccount = () => {
           sequenceNumber: undefined
         }
 
-        localStorage.removeItem("User")
-
         // Update context
         setState(newAccount)
 

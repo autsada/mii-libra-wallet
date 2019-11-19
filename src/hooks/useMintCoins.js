@@ -12,7 +12,6 @@ import { saveLocalAccount } from "../helpers/getLocalStorageData"
 
 export const useMintCoins = accountState => {
   const { setState } = useContext(QueryContext)
-  const { setCheckState } = useQueryState(accountState)
 
   //   const client = useApolloClient()
 
@@ -34,7 +33,6 @@ export const useMintCoins = accountState => {
         balance,
         sequenceNumber: sequence_number
       }
-      setCheckState(false)
 
       // Update context
       setState(updatedState)
