@@ -1,24 +1,24 @@
-import { ApolloClient } from 'apollo-client'
-import { InMemoryCache } from 'apollo-cache-inmemory'
-import { split } from 'apollo-link'
-import { HttpLink } from 'apollo-link-http'
-import { WebSocketLink } from 'apollo-link-ws'
-import { getMainDefinition } from 'apollo-utilities'
+import { ApolloClient } from "apollo-client"
+import { InMemoryCache } from "apollo-cache-inmemory"
+import { split } from "apollo-link"
+import { HttpLink } from "apollo-link-http"
+import { WebSocketLink } from "apollo-link-ws"
+import { getMainDefinition } from "apollo-utilities"
 
-import typeDefs from './typeDefs'
-import resolvers from './resolvers'
+import typeDefs from "./typeDefs"
+import resolvers from "./resolvers"
 
 const cache = new InMemoryCache({ addTypename: false })
 
 // Create an http link:
 const httpLink = new HttpLink({
-  uri: 'https://libra-graphql.herokuapp.com/'
-  // uri: 'http://localhost:8000'
+  uri: "https://libra-graphql.herokuapp.com/"
+  // uri: "http://localhost:8000"
 })
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: 'wss://libra-graphql.herokuapp.com/',
+  uri: "wss://libra-graphql.herokuapp.com/",
   options: {
     reconnect: true
   }
@@ -33,7 +33,7 @@ const link = split(
   // split based on operation type
   ({ query }) => {
     const { kind, operation } = getMainDefinition(query)
-    return kind === 'OperationDefinition' && operation === 'subscription'
+    return kind === "OperationDefinition" && operation === "subscription"
   },
   wsLink,
   httpLink

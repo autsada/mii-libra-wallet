@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import QRCode from "qrcode.react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import React, { useContext, useEffect, useState } from "react"
+import styled from "styled-components"
+import QRCode from "qrcode.react"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -14,16 +13,16 @@ import {
   WhatsappIcon,
   EmailShareButton,
   EmailIcon
-} from "react-share";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+} from "react-share"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 // import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
-import { Notyf } from "notyf";
-import "notyf/notyf.min.css";
+import { Notyf } from "notyf"
+import "notyf/notyf.min.css"
 
-import { QueryContext, useCreateAccount, useQueryState } from "../hooks";
-import Balance from "./Balance";
-import Loader from "./Loader";
+import { QueryContext, useCreateAccount, useQueryState } from "../hooks"
+import Balance from "./Balance"
+import Loader from "./Loader"
 
 const AccountDiv = styled.div`
   margin: 0 auto;
@@ -80,49 +79,53 @@ const AccountDiv = styled.div`
       width: 60%;
     }
   }
-`;
+`
 
 const Account = () => {
-  const { accountState } = useContext(QueryContext);
-  const { setCheckState } = useQueryState(accountState);
-  const [copied, setCopied] = useState(false);
+  const { accountState } = useContext(QueryContext)
+  const { setCheckState } = useQueryState(accountState)
+  const [copied, setCopied] = useState(false)
   const {
     createAccount,
     createAccountLoading,
     createAccountError
-  } = useCreateAccount();
+  } = useCreateAccount()
 
   // Share url for address
   const url = `${window.location.href}account/${accountState &&
-    accountState.address}`;
+    accountState.address}`
 
-  const notyf = new Notyf();
+  const notyf = new Notyf()
 
   // const notify = () =>
   //   toast.success("copied", { position: toast.POSITION.BOTTOM_CENTER });
 
   useEffect(() => {
-    // localStorage.removeItem('Events')
     if (
       !accountState ||
-      (accountState && (!accountState.address || !accountState.secretKey))
+      (accountState &&
+        (!accountState.address ||
+          accountState.secretKey ||
+          !accountState.mnemonic))
     ) {
+      localStorage.removeItem("User")
+
       const createUser = async () => {
         try {
-          const res = await createAccount();
+          const res = await createAccount()
 
           if (res) {
             if (res.data.createAccount.address) {
-              setCheckState(true);
+              setCheckState(true)
             }
           }
         } catch (err) {
-          console.log(err);
+          console.log(err)
         }
-      };
-      createUser();
+      }
+      createUser()
     }
-  }, []);
+  }, [])
 
   return (
     <AccountDiv>
@@ -140,7 +143,6 @@ const Account = () => {
         !createAccountError && (
           <div className="address">
             <p>{accountState && accountState.address}</p>
-            <Link to={`/account/${accountState && accountState.address}`} />
           </div>
         )}
 
@@ -179,8 +181,8 @@ const Account = () => {
           <CopyToClipboard
             text={accountState && accountState.address}
             onCopy={() => {
-              setCopied(true);
-              notyf.success("copied");
+              setCopied(true)
+              notyf.success("copied")
               // notify();
             }}
           >
@@ -202,7 +204,7 @@ const Account = () => {
 
       {/* <ToastContainer autoClose={1000} /> */}
     </AccountDiv>
-  );
-};
+  )
+}
 
-export default Account;
+export default Account

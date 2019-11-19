@@ -234,7 +234,7 @@ const ManualTransfer = () => {
     amountError
   } = useContext(ManualTransferContext)
 
-  const { transferMoney, loading, error } = useTransferCoins({
+  const { transferCoins, loading, error } = useTransferCoins({
     accountState,
     receiver: receiver || qrValue,
     transferAmount: amount
@@ -243,7 +243,7 @@ const ManualTransfer = () => {
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      await transferMoney()
+      await transferCoins()
     } catch (err) {
       cancelManual()
     }
@@ -319,6 +319,13 @@ const ManualTransfer = () => {
                           ) : (receiver && receiver.length > 64) ||
                             (qrValue && qrValue.length > 64) ? (
                             <p className="error-text">Address is too long</p>
+                          ) : receiver ===
+                              (accountState && accountState.address) ||
+                            qrValue ===
+                              (accountState && accountState.address) ? (
+                            <p className="error-text">
+                              Invalid receiver address
+                            </p>
                           ) : null}
                         </div>
                       }
@@ -373,6 +380,7 @@ const ManualTransfer = () => {
                             (receiver && receiver.length !== 64)) &&
                             !qrValue) ||
                           (qrValue && qrValue.length !== 64) ||
+                          receiver === (accountState && accountState.address) ||
                           !amount ||
                           loading ||
                           error

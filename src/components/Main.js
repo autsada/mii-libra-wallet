@@ -1,6 +1,7 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useSpring, animated } from "react-spring"
 
 import { ActivityContext } from "../hooks"
 import Head from "./Head"
@@ -113,6 +114,8 @@ const Main = () => {
     ActivityContext
   )
 
+  const fade = useSpring({ from: { opacity: 0 }, opacity: 1 })
+
   return (
     <MainDiv>
       <Head />
@@ -130,13 +133,18 @@ const Main = () => {
         <div className="button-text">Activities</div>
 
         {showEvents ? (
-          <FontAwesomeIcon icon="angle-down" />
+          <animated.div style={fade}>
+            <FontAwesomeIcon icon="angle-down" />
+          </animated.div>
         ) : (
-          <FontAwesomeIcon icon="angle-up" />
+          <animated.div style={fade}>
+            <FontAwesomeIcon icon="angle-up" />
+          </animated.div>
         )}
       </div>
 
-      {showEvents && <EventsList />}
+      {/* {showEvents && <EventsList />} */}
+      <EventsList />
 
       <ReceivedCoinsMessage />
     </MainDiv>

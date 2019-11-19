@@ -1,10 +1,11 @@
-import gql from 'graphql-tag'
+import gql from "graphql-tag"
 
 export const GET_CURRENT_USER = gql`
   query GET_CURRENT_USER {
     user @client {
       address
-      secretKey
+      # secretKey
+      mnemonic
       sequenceNumber @client
       balance @client
     }

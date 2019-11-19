@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import { Button } from "@material-ui/core";
-import QrReader from "react-qr-reader";
-import OutSideClick from "react-outside-click-handler";
-import styled from "styled-components";
+import React, { useContext } from "react"
+import { Button } from "@material-ui/core"
+import QrReader from "react-qr-reader"
+import OutSideClick from "react-outside-click-handler"
+import styled from "styled-components"
 
-import { ActivityContext, QrCodeContext } from "../../hooks";
+import { ActivityContext, QrCodeContext } from "../../hooks"
 
 const Div = styled.div`
   width: 50%;
@@ -115,37 +115,40 @@ const Div = styled.div`
     margin: 0;
     padding: 0;
   }
-`;
+`
 
 const QrCodeModal = () => {
-  const { closeScanQR } = useContext(ActivityContext);
-  const { handleScan, handleError } = useContext(QrCodeContext);
+  const { closeScanQR } = useContext(ActivityContext)
+  const { handleScan, handleError, qrError } = useContext(QrCodeContext)
 
   return (
     <OutSideClick onOutsideClick={closeScanQR}>
-      <Div>
-        <div className="close">
-          <div className="close-left" onClick={closeScanQR}>
-            &times;
+      {qrError && <p>Something went wrong with qr code, please reload.</p>}
+      {!qrError && (
+        <Div>
+          <div className="close">
+            <div className="close-left" onClick={closeScanQR}>
+              &times;
+            </div>
           </div>
-        </div>
 
-        <div className="qr-code-reader">
-          <QrReader
-            delay={50}
-            onError={handleError}
-            onScan={handleScan}
-            className="qr-reader"
-          />
-        </div>
-        <div className="to-manual">
-          <Button className="switch-mode" onClick={closeScanQR}>
-            Close
-          </Button>
-        </div>
-      </Div>
+          <div className="qr-code-reader">
+            <QrReader
+              delay={50}
+              onError={handleError}
+              onScan={handleScan}
+              className="qr-reader"
+            />
+          </div>
+          <div className="to-manual">
+            <Button className="switch-mode" onClick={closeScanQR}>
+              Close
+            </Button>
+          </div>
+        </Div>
+      )}
     </OutSideClick>
-  );
-};
+  )
+}
 
-export default QrCodeModal;
+export default QrCodeModal

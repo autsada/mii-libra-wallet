@@ -1,17 +1,17 @@
-import { useContext } from "react";
-import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { useContext } from "react"
+import { useMutation } from "@apollo/react-hooks"
 
-import { QueryContext } from "./index";
-import { MINT_COINS } from "../apolloClient/mutation";
+import { QueryContext } from "./index"
+import { MINT_COINS } from "../apolloClient/mutation"
 import {
   QUERY_RECEIVED_EVENTS,
   QUERY_SENT_EVENTS,
   QUERY_BY_ADDRESS
-} from "../apolloClient/query";
-import { saveLocalAccount } from "../helpers/getLocalStorageData";
+} from "../apolloClient/query"
+import { saveLocalAccount } from "../helpers/getLocalStorageData"
 
 export const useMintCoins = accountState => {
-  const { setState } = useContext(QueryContext);
+  const { setState } = useContext(QueryContext)
 
   //   const client = useApolloClient()
 
@@ -25,18 +25,18 @@ export const useMintCoins = accountState => {
         blob: {
           blob: { balance, sequence_number }
         }
-      } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof;
+      } = mintCoin.response_items[0].get_account_state_response.account_state_with_proof
 
       // setNewTxnVersion(version)
       const updatedState = {
         ...accountState,
         balance,
         sequenceNumber: sequence_number
-      };
+      }
       // Update context
-      setState(updatedState);
+      setState(updatedState)
       // Update localStorage
-      saveLocalAccount(updatedState);
+      saveLocalAccount(updatedState)
       // Update cache
       //   client.writeData({
       //     data: {
@@ -64,11 +64,11 @@ export const useMintCoins = accountState => {
         }
       }
     ]
-  });
+  })
 
   return {
     mintCoin,
     loading,
     error
-  };
-};
+  }
+}

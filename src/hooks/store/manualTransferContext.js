@@ -1,11 +1,11 @@
-import React, { useState, createContext, useEffect } from 'react'
+import React, { useState, createContext, useEffect } from "react"
 
-import usePrevious from '../usePrevious'
+import usePrevious from "../usePrevious"
 
 export const ManualTransferContext = createContext()
 
 const transferArgsDefault = {
-  receiver: '',
+  receiver: "",
   amount: 0
 }
 
@@ -55,7 +55,7 @@ export const ManualTransferProvider = ({ children }) => {
 
   const handleChange = e => {
     const { type, name, value } = e.target
-    const val = type === 'number' ? parseFloat(+value) : value
+    const val = type === "number" ? parseFloat(+value) : value
     setTransferArgs({ ...transferArgs, [name]: val })
   }
 

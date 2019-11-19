@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
-import styled from "styled-components";
-import QRCode from "qrcode.react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Notyf } from "notyf";
-import "notyf/notyf.min.css";
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
+import styled from "styled-components"
+import QRCode from "qrcode.react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { CopyToClipboard } from "react-copy-to-clipboard"
+import { Notyf } from "notyf"
+import "notyf/notyf.min.css"
 
 const MainDiv = styled.div`
   width: 50%;
@@ -97,14 +97,13 @@ const MainDiv = styled.div`
       }
     }
   }
-`;
+`
 
 const ShareQR = () => {
-  const { address } = useParams();
-  const history = useHistory();
-  const [copied, setCopied] = useState(false);
+  const { address } = useParams()
+  const [copied, setCopied] = useState(false)
 
-  const notyf = new Notyf();
+  const notyf = new Notyf()
 
   return (
     <MainDiv>
@@ -118,8 +117,8 @@ const ShareQR = () => {
           <CopyToClipboard
             text={address}
             onCopy={() => {
-              setCopied(true);
-              notyf.success("copied");
+              setCopied(true)
+              notyf.success("copied")
               // notify();
             }}
           >
@@ -131,7 +130,7 @@ const ShareQR = () => {
         </div>
       </div>
     </MainDiv>
-  );
-};
+  )
+}
 
-export default ShareQR;
+export default ShareQR
