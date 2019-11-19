@@ -104,12 +104,10 @@ const Account = () => {
     if (
       !accountState ||
       (accountState &&
-        (!accountState.address ||
-          accountState.secretKey ||
-          !accountState.mnemonic))
+        !accountState.address &&
+        accountState.secretKey &&
+        !accountState.mnemonic)
     ) {
-      localStorage.removeItem("User")
-
       const createUser = async () => {
         try {
           const res = await createAccount()

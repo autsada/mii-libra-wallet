@@ -14,6 +14,8 @@ export const useCreateAccount = () => {
 
   const [createAccount, { loading, error }] = useMutation(CREATE_ACCOUNT, {
     onCompleted({ createAccount }) {
+      localStorage.removeItem("User")
+
       if (createAccount) {
         const newAccount = {
           ...createAccount,
