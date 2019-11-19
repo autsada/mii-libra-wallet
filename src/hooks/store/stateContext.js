@@ -4,14 +4,8 @@ import { getLocalAccount } from "../../helpers/getLocalStorageData"
 
 export const QueryContext = createContext()
 
-let account = getLocalAccount()
-
-if (account && account.secretKey) {
-  account = {}
-}
-
 export const StateProvider = ({ children }) => {
-  const [accountState, setAccountState] = useState(account)
+  const [accountState, setAccountState] = useState(getLocalAccount())
 
   const setState = state => {
     setAccountState(state)
