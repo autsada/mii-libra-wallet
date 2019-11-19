@@ -1,11 +1,17 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState } from "react"
 
-import { getLocalAccount } from '../../helpers/getLocalStorageData'
+import { getLocalAccount } from "../../helpers/getLocalStorageData"
 
 export const QueryContext = createContext()
 
+let account = getLocalAccount()
+
+if (account && account.secretKey) {
+  account = {}
+}
+
 export const StateProvider = ({ children }) => {
-  const [accountState, setAccountState] = useState(getLocalAccount())
+  const [accountState, setAccountState] = useState(account)
 
   const setState = state => {
     setAccountState(state)

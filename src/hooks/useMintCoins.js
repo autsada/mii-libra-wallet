@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import { useMutation } from "@apollo/react-hooks"
 
-import { QueryContext, useQueryState } from "./index"
+import { QueryContext } from "./index"
 import { MINT_COINS } from "../apolloClient/mutation"
 import {
   QUERY_RECEIVED_EVENTS,
