@@ -11,7 +11,7 @@ import {
 import { saveLocalAccount } from "../helpers/getLocalStorageData"
 
 export const useMintCoins = accountState => {
-  const { setState, accountState } = useContext(QueryContext)
+  const { setState } = useContext(QueryContext)
   const { setCheckState } = useQueryState(accountState)
 
   //   const client = useApolloClient()
