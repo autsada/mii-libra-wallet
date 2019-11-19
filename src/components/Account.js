@@ -104,7 +104,7 @@ const Account = () => {
     if (
       !accountState ||
       (accountState &&
-        !accountState.address &&
+        accountState.address &&
         accountState.secretKey &&
         !accountState.mnemonic)
     ) {
@@ -113,7 +113,10 @@ const Account = () => {
           const res = await createAccount()
 
           if (res) {
-            if (res.data.createAccount.address) {
+            if (
+              res.data.createAccount.address &&
+              res.data.createAccount.mnemonic
+            ) {
               setCheckState(true)
             }
           }
