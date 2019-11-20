@@ -24,7 +24,6 @@ const Balance = () => {
       if (
         accountState &&
         accountState.address &&
-        accountState.mnemonic &&
         (!accountState.balance || +accountState.balance < 50)
       ) {
         mintCoin()
