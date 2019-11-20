@@ -1,8 +1,8 @@
-import React, { useContext } from "react"
-import styled from "styled-components"
-import { TextField, Button } from "@material-ui/core"
-import { makeStyles } from "@material-ui/core/styles"
-import OutSideClick from "react-outside-click-handler"
+import React, { useContext } from "react";
+import styled from "styled-components";
+import { TextField, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import OutSideClick from "react-outside-click-handler";
 
 import {
   ActivityContext,
@@ -10,8 +10,8 @@ import {
   ManualTransferContext,
   QrCodeContext,
   useTransferCoins
-} from "../../hooks"
-import Loader from "../Loader"
+} from "../../hooks";
+import Loader from "../Loader";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   cssFocused: {},
   error: {},
   disabled: {}
-}))
+}));
 
 const Div = styled.div`
   width: 50%;
@@ -219,35 +219,35 @@ const Div = styled.div`
       }
     }
   }
-`
+`;
 
 const ManualTransfer = () => {
-  const classes = useStyles()
-  const { cancelManual, scanQR } = useContext(ActivityContext)
-  const { accountState } = useContext(QueryContext)
-  const { qrValue } = useContext(QrCodeContext)
+  const classes = useStyles();
+  const { cancelManual, scanQR } = useContext(ActivityContext);
+  const { accountState } = useContext(QueryContext);
+  const { qrValue } = useContext(QrCodeContext);
   const {
     transferArgs: { receiver, amount },
     handleChange,
     handleBlur,
     receiverError,
     amountError
-  } = useContext(ManualTransferContext)
+  } = useContext(ManualTransferContext);
 
   const { transferCoins, loading, error } = useTransferCoins({
     accountState,
     receiver: receiver || qrValue,
     transferAmount: amount
-  })
+  });
 
   const handleSubmit = async e => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      await transferCoins()
+      await transferCoins();
     } catch (err) {
-      cancelManual()
+      cancelManual();
     }
-  }
+  };
 
   return (
     <>
@@ -375,18 +375,42 @@ const ManualTransfer = () => {
                     <Button
                       type="submit"
                       style={{
+                        color:
+                          (((!receiver ||
+                            (receiver && receiver.length !== 64)) &&
+                            !qrValue) ||
+                            (qrValue && qrValue.length !== 64) ||
+                            receiver ===
+                              (accountState && accountState.address) ||
+                            qrValue ===
+                              (accountState && accountState.address) ||
+                            !amount ||
+                            loading ||
+                            error) &&
+                          "grey",
                         cursor:
                           ((!receiver ||
                             (receiver && receiver.length !== 64)) &&
                             !qrValue) ||
                           (qrValue && qrValue.length !== 64) ||
                           receiver === (accountState && accountState.address) ||
+                          qrValue === (accountState && accountState.address) ||
                           !amount ||
                           loading ||
                           error
                             ? "not-allowed"
                             : "pointer"
                       }}
+                      disabled={
+                        ((!receiver || (receiver && receiver.length !== 64)) &&
+                          !qrValue) ||
+                        (qrValue && qrValue.length !== 64) ||
+                        receiver === (accountState && accountState.address) ||
+                        qrValue === (accountState && accountState.address) ||
+                        !amount ||
+                        loading ||
+                        error
+                      }
                     >
                       Submit
                     </Button>
@@ -398,7 +422,7 @@ const ManualTransfer = () => {
         </OutSideClick>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ManualTransfer
+export default ManualTransfer;
