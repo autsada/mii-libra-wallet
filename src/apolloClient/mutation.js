@@ -1,4 +1,4 @@
-import gql from "graphql-tag"
+import gql from "graphql-tag";
 
 export const CREATE_ACCOUNT = gql`
   mutation CREATE_ACCOUNT {
@@ -8,10 +8,10 @@ export const CREATE_ACCOUNT = gql`
       mnemonic
     }
   }
-`
+`;
 
 export const MINT_COINS = gql`
-  mutation MINT_COINS($amount: Int!, $address: String!) {
+  mutation MINT_COINS($amount: Float!, $address: String!) {
     mintCoin(amount: $amount, address: $address) {
       response_items {
         get_account_state_response {
@@ -28,7 +28,7 @@ export const MINT_COINS = gql`
       }
     }
   }
-`
+`;
 
 // export const TRANSFER_COINS = gql`
 //   mutation TRANSFER_COINS(
@@ -71,7 +71,7 @@ export const TRANSFER_COINS = gql`
     $fromAddress: String!
     $sequenceNumber: Int!
     $toAddress: String!
-    $amount: Int!
+    $amount: Float!
     $mnemonic: String!
   ) {
     transferCoins(
@@ -100,4 +100,4 @@ export const TRANSFER_COINS = gql`
       }
     }
   }
-`
+`;
