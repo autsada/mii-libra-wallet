@@ -64,8 +64,7 @@ export const useQueryState = accountState => {
     if (error) {
       if (
         error.message ===
-          "GraphQL error: Error: Account does not exist in libra database." ||
-        "GraphQL error: Error: Account does not exist, please check your arguments or try again later."
+        "GraphQL error: Account does not exist in libra database."
       ) {
         // No account found in the system
         const updatedUser = {
