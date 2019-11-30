@@ -14,6 +14,7 @@ const BalanceDiv = styled.div`
 
   p {
     font-size: 1.5rem;
+    color: red;
   }
 `;
 
