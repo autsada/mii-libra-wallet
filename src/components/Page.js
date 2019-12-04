@@ -1,8 +1,8 @@
-import React from "react"
-import styled, { ThemeProvider, createGlobalStyle } from "styled-components"
+import React from "react";
+import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 
-import NavBar from "./NavBar"
-import { muiTheme } from "../cssTheme"
+import NavBar from "./NavBar";
+import { muiTheme } from "../cssTheme";
 
 const GlobalStyle = createGlobalStyle`
    html {
@@ -18,9 +18,16 @@ const GlobalStyle = createGlobalStyle`
       font-size: 1.6rem;
       font-family: ${props => props.theme.typography.fontFamily};
       font-weight: 400;
-
    }
-`
+
+   .toast {
+    .notyf__message {
+      font-size: 2rem;
+      overflow-wrap: break-word;
+      padding: 0.2rem;
+    }
+   }
+`;
 
 const StyledPage = styled.div`
   background: rgba(66, 49, 140, 0.35);
@@ -39,7 +46,7 @@ const StyledPage = styled.div`
   @media ${props => props.theme.sm} {
     width: 100%;
   }
-`
+`;
 
 const InnerPage = styled.div`
   max-width: 80%;
@@ -51,7 +58,7 @@ const InnerPage = styled.div`
     max-width: 100%;
     padding: 0;
   }
-`
+`;
 
 const Page = ({ children }) => (
   <ThemeProvider theme={muiTheme}>
@@ -63,6 +70,6 @@ const Page = ({ children }) => (
       </StyledPage>
     </>
   </ThemeProvider>
-)
+);
 
-export default Page
+export default Page;

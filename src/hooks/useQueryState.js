@@ -1,6 +1,8 @@
 import { useEffect, useContext, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import { Notyf } from "notyf";
 
+import { myTheme } from "../cssTheme/myTheme";
 import { QueryContext } from "../hooks";
 import { QUERY_BY_ADDRESS } from "../apolloClient/query";
 import { saveLocalAccount } from "../helpers/getLocalStorageData";
@@ -11,6 +13,19 @@ export const useQueryState = accountState => {
 
   //   const client = useApolloClient()
 
+  const notyf = new Notyf({
+    duration: 5000,
+    types: [
+      {
+        type: "info",
+        backgroundColor: `${myTheme.teal}`,
+        className: "toast",
+        icon: false
+      }
+    ]
+  });
+
+  // Find account state in the system
   const { data, error } = useQuery(QUERY_BY_ADDRESS, {
     variables: {
       address: accountState && accountState.address
@@ -36,12 +51,20 @@ export const useQueryState = accountState => {
           }
         } = data.queryByAddress.response_items[0].get_account_state_response.account_state_with_proof;
 
-        // Find account state in the system
         const updatedUser = {
           ...accountState,
           balance,
           sequenceNumber: sequence_number
         };
+
+        if (+balance > +accountState.balance) {
+          notyf.open({
+            type: "info",
+            message: `Received coin${
+              (+balance - +accountState.balance) / 1000000 > 1 ? "s" : ""
+            }: ${(+balance - +accountState.balance) / 1000000} Libra`
+          });
+        }
 
         // Update context
         setState(updatedUser);
