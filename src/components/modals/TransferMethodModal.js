@@ -1,9 +1,9 @@
-import React, { useContext } from "react"
-import { Button } from "@material-ui/core"
-import styled from "styled-components"
-import OutSideClick from "react-outside-click-handler"
+import React, { useContext } from "react";
+import { Button } from "@material-ui/core";
+import styled from "styled-components";
+import OutSideClick from "react-outside-click-handler";
 
-import { ActivityContext } from "../../hooks"
+import { ActivityContext } from "../../hooks";
 
 const Div = styled.div`
   width: 30%;
@@ -12,7 +12,7 @@ const Div = styled.div`
   border-radius: ${props => props.theme.shape.borderRadius * 2}px;
   height: 15rem;
   position: absolute;
-  top: 70%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -93,10 +93,10 @@ const Div = styled.div`
     width: 100%;
     height: 45%;
   }
-`
+`;
 
 const TransferMethodModal = () => {
-  const { manual, scanQR, cancelSendCoins } = useContext(ActivityContext)
+  const { manual, scanQR, cancelSendCoins } = useContext(ActivityContext);
 
   return (
     <OutSideClick onOutsideClick={cancelSendCoins}>
@@ -115,7 +115,7 @@ const TransferMethodModal = () => {
         </div>
       </Div>
     </OutSideClick>
-  )
-}
+  );
+};
 
-export default TransferMethodModal
+export default TransferMethodModal;

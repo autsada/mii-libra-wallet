@@ -53,6 +53,10 @@ const Div = styled.div`
   margin: 4rem auto;
   top: 50%;
   left: 50%;
+
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
   transform: translate(-50%, -50%);
 
   @media ${props => props.theme.lg} {
@@ -71,6 +75,19 @@ const Div = styled.div`
     top: 40%;
     width: 100%;
     height: 100%;
+  }
+
+  .transfer-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 8rem;
+    color: red;
+
+    @media ${props => props.theme.sm} {
+      margin-top: 16rem;
+    }
   }
 
   .close {
@@ -245,7 +262,7 @@ const ManualTransfer = () => {
     try {
       await transferCoins();
     } catch (err) {
-      cancelManual();
+      // cancelManual();
     }
   };
 
@@ -263,15 +280,17 @@ const ManualTransfer = () => {
               </div>
             )}
 
-            {error && (
-              <p>Ooobs..., something went wrong. Please refresh the page.</p>
-            )}
-
-            {!loading && !error && (
+            {!loading && (
               <div className="close">
                 <div className="close-left" onClick={cancelManual}>
                   &times;
                 </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="transfer-error">
+                <div>Ooobs..., something went wrong. Please try again.</div>
               </div>
             )}
 
