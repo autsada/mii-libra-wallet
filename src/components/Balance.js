@@ -46,7 +46,7 @@ const Balance = () => {
         <>
           <img src="/assets/libra-coin.png" width="30" alt="libra" />
           <NumberFormat
-            value={accountState.balance / 1000000}
+            value={(accountState.balance / 1000000).toFixed(2)}
             displayType={"text"}
             thousandSeparator={true}
             // prefix={'Lib: '}
