@@ -332,11 +332,11 @@ const ManualTransfer = () => {
                             <p className="error-text">
                               Receiver address is required
                             </p>
-                          ) : (receiver && receiver.length < 64) ||
-                            (qrValue && qrValue.length < 64) ? (
+                          ) : (receiver && receiver.length < 32) ||
+                            (qrValue && qrValue.length < 32) ? (
                             <p className="error-text">Address is too short</p>
-                          ) : (receiver && receiver.length > 64) ||
-                            (qrValue && qrValue.length > 64) ? (
+                          ) : (receiver && receiver.length > 32) ||
+                            (qrValue && qrValue.length > 32) ? (
                             <p className="error-text">Address is too long</p>
                           ) : receiver ===
                               (accountState && accountState.address) ||
