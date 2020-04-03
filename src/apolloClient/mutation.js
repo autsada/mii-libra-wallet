@@ -6,13 +6,14 @@ export const CREATE_ACCOUNT = gql`
       address
       # secretKey
       mnemonic
+      authKey
     }
   }
 `;
 
 export const MINT_COINS = gql`
-  mutation MINT_COINS($amount: Float!, $address: String!) {
-    mintCoin(amount: $amount, address: $address) {
+  mutation MINT_COINS($amount: Float!, $address: String!, $authKey: String!) {
+    mintCoin(amount: $amount, address: $address, authKey: $authKey) {
       response_items {
         get_account_state_response {
           account_state_with_proof {
