@@ -9,45 +9,45 @@ import {
   QueryContext,
   ManualTransferContext,
   QrCodeContext,
-  useTransferCoins
+  useTransferCoins,
 } from "../../hooks";
 import Loader from "../Loader";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    marginBottom: "100px"
+    marginBottom: "100px",
   },
   cssOutlinedInput: {
     "&:not(hover):not($disabled):not($cssFocused):not($error) $notchedOutline": {
       borderColor: `${theme.teal}`,
-      borderWidth: "0.6px" //default
+      borderWidth: "0.6px", //default
     },
     "&:hover:not($disabled):not($cssFocused):not($error) $notchedOutline": {
       borderWidth: "1px",
-      borderColor: `${theme.teal}` //hovered
+      borderColor: `${theme.teal}`, //hovered
     },
     "&$cssFocused $notchedOutline": {
       borderWidth: "1px",
-      borderColor: `${theme.teal}` //focused
-    }
+      borderColor: `${theme.teal}`, //focused
+    },
   },
   notchedOutline: {},
   cssFocused: {},
   error: {},
-  disabled: {}
+  disabled: {},
 }));
 
 const Div = styled.div`
   width: 50%;
-  border: 1px solid ${props => props.theme.grey};
-  background: ${props => props.theme.white};
-  border-radius: ${props => props.theme.shape.borderRadius * 2}px;
+  border: 1px solid ${(props) => props.theme.grey};
+  background: ${(props) => props.theme.white};
+  border-radius: ${(props) => props.theme.shape.borderRadius * 2}px;
   height: 65%;
   position: absolute;
   margin: 4rem auto;
@@ -59,19 +59,19 @@ const Div = styled.div`
   align-items: center; */
   transform: translate(-50%, -50%);
 
-  @media ${props => props.theme.lg} {
+  @media ${(props) => props.theme.lg} {
     top: 30%;
     width: 50%;
     height: 25%;
   }
 
-  @media ${props => props.theme.md} {
+  @media ${(props) => props.theme.md} {
     top: 30%;
     width: 50%;
     height: 35%;
   }
 
-  @media ${props => props.theme.sm} {
+  @media ${(props) => props.theme.sm} {
     top: 40%;
     width: 100%;
     height: 100%;
@@ -85,7 +85,7 @@ const Div = styled.div`
     margin-top: 8rem;
     color: red;
 
-    @media ${props => props.theme.sm} {
+    @media ${(props) => props.theme.sm} {
       margin-top: 16rem;
     }
   }
@@ -96,7 +96,7 @@ const Div = styled.div`
     align-items: center;
     height: 20%;
 
-    @media ${props => props.theme.sm} {
+    @media ${(props) => props.theme.sm} {
       justify-content: center;
     }
 
@@ -109,18 +109,18 @@ const Div = styled.div`
       margin-top: 0;
       margin-right: 1rem;
       font-size: 3rem;
-      color: ${props => props.theme.grey};
+      color: ${(props) => props.theme.grey};
       cursor: pointer;
       border-radius: 50px;
-      transition: background-color ${props => props.theme.transitionDuration}
+      transition: background-color ${(props) => props.theme.transitionDuration}
         ease-in;
 
       &:hover {
-        color: ${props => props.theme.black};
-        background: ${props => props.theme.lightgrey};
+        color: ${(props) => props.theme.black};
+        background: ${(props) => props.theme.lightgrey};
       }
 
-      @media ${props => props.theme.sm} {
+      @media ${(props) => props.theme.sm} {
         right: 0.5rem;
       }
     }
@@ -133,7 +133,7 @@ const Div = styled.div`
     justify-content: space-around;
     margin-top: 8rem;
 
-    @media ${props => props.theme.sm} {
+    @media ${(props) => props.theme.sm} {
       margin-top: 16rem;
     }
 
@@ -141,7 +141,7 @@ const Div = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
-      color: ${props => props.theme.libraBlue};
+      color: ${(props) => props.theme.libraBlue};
       font-size: 1.5rem;
       margin-top: 3rem;
     }
@@ -158,7 +158,7 @@ const Div = styled.div`
       justify-content: space-between;
       padding: 0;
 
-      @media ${props => props.theme.sm} {
+      @media ${(props) => props.theme.sm} {
         margin: 5% auto;
         width: 80%;
       }
@@ -168,18 +168,18 @@ const Div = styled.div`
       }
 
       .MuiOutlinedInput-root {
-        @media ${props => props.theme.sm} {
+        @media ${(props) => props.theme.sm} {
           height: 4rem;
           font-size: 1.4rem;
         }
       }
 
       .MuiOutlinedInput-root .border-error {
-        border-color: ${props => props.theme.red};
+        border-color: ${(props) => props.theme.red};
       }
 
       .MuiInputLabel-outlined {
-        @media ${props => props.theme.sm} {
+        @media ${(props) => props.theme.sm} {
           font-size: 1.8rem;
         }
       }
@@ -189,7 +189,7 @@ const Div = styled.div`
       input:-webkit-autofill:focus,
       input:-webkit-autofill:active {
         transition: background-color 5000s ease-in-out 0s;
-        -webkit-text-fill-color: ${props => props.theme.black} !important;
+        -webkit-text-fill-color: ${(props) => props.theme.black} !important;
       }
 
       .submit-button-container {
@@ -201,26 +201,26 @@ const Div = styled.div`
         margin-top: 2%;
         padding: 0;
         height: 6rem;
-        border-radius: ${props => props.theme.shape.borderRadius * 2}px;
+        border-radius: ${(props) => props.theme.shape.borderRadius * 2}px;
 
-        @media ${props => props.theme.sm} {
+        @media ${(props) => props.theme.sm} {
           /* margin-top: 3rem; */
           height: 4rem;
         }
 
         .to-qr {
-          background: ${props => props.theme.black};
+          background: ${(props) => props.theme.black};
 
           &:hover {
-            background: ${props => props.theme.grey};
+            background: ${(props) => props.theme.grey};
           }
         }
 
         .cancel {
-          background: ${props => props.theme.red};
+          background: ${(props) => props.theme.red};
 
           &:hover {
-            background: ${props => props.theme.darkRed};
+            background: ${(props) => props.theme.darkRed};
           }
         }
       }
@@ -248,16 +248,16 @@ const ManualTransfer = () => {
     handleChange,
     handleBlur,
     receiverError,
-    amountError
+    amountError,
   } = useContext(ManualTransferContext);
 
   const { transferCoins, loading, error } = useTransferCoins({
     accountState,
     receiver: receiver || qrValue,
-    transferAmount: amount
+    transferAmount: amount,
   });
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await transferCoins();
@@ -317,11 +317,11 @@ const ManualTransfer = () => {
                         classes: {
                           notchedOutline: classes.notchedOutline,
                           root: classes.cssOutlinedInput,
-                          focused: classes.cssFocused
-                        }
+                          focused: classes.cssFocused,
+                        },
                       }}
                       InputLabelProps={{
-                        shrink: true
+                        shrink: true,
                       }}
                     />
 
@@ -368,11 +368,11 @@ const ManualTransfer = () => {
                         classes: {
                           notchedOutline: classes.notchedOutline,
                           root: classes.cssOutlinedInput,
-                          focused: classes.cssFocused
-                        }
+                          focused: classes.cssFocused,
+                        },
                       }}
                       InputLabelProps={{
-                        shrink: true
+                        shrink: true,
                       }}
                     />
                   </div>
@@ -396,9 +396,9 @@ const ManualTransfer = () => {
                       style={{
                         color:
                           (((!receiver ||
-                            (receiver && receiver.length !== 64)) &&
+                            (receiver && receiver.length !== 32)) &&
                             !qrValue) ||
-                            (qrValue && qrValue.length !== 64) ||
+                            (qrValue && qrValue.length !== 32) ||
                             receiver ===
                               (accountState && accountState.address) ||
                             qrValue ===
@@ -409,21 +409,21 @@ const ManualTransfer = () => {
                           "grey",
                         cursor:
                           ((!receiver ||
-                            (receiver && receiver.length !== 64)) &&
+                            (receiver && receiver.length !== 32)) &&
                             !qrValue) ||
-                          (qrValue && qrValue.length !== 64) ||
+                          (qrValue && qrValue.length !== 32) ||
                           receiver === (accountState && accountState.address) ||
                           qrValue === (accountState && accountState.address) ||
                           !amount ||
                           loading ||
                           error
                             ? "not-allowed"
-                            : "pointer"
+                            : "pointer",
                       }}
                       disabled={
-                        ((!receiver || (receiver && receiver.length !== 64)) &&
+                        ((!receiver || (receiver && receiver.length !== 32)) &&
                           !qrValue) ||
-                        (qrValue && qrValue.length !== 64) ||
+                        (qrValue && qrValue.length !== 32) ||
                         receiver === (accountState && accountState.address) ||
                         qrValue === (accountState && accountState.address) ||
                         !amount ||
